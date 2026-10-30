@@ -63,6 +63,38 @@ document.addEventListener('click', event => {
   const image = trigger?.querySelector('img');
   if (image) {event.preventDefault(); openPhotoViewer(image);}
 });
+// Horizontal single-finger swipes; vertical scrolling and pinch zoom stay native.
+const photoStage = photoViewer.querySelector('.photo-viewer-stage');
+let photoTouch = null, suppressPhotoClickUntil = 0;
+photoStage.addEventListener('touchstart', event => {
+  photoTouch = event.touches.length === 1 && !event.target.closest('button') && photoViewer.open && viewerPhotos.length > 1
+    ? {x:event.touches[0].clientX,y:event.touches[0].clientY,id:event.touches[0].identifier} : null;
+}, {passive:true});
+photoStage.addEventListener('touchmove', event => {if(event.touches.length !== 1) photoTouch=null;}, {passive:true});
+photoStage.addEventListener('touchcancel', () => {photoTouch=null;}, {passive:true});
+photoStage.addEventListener('touchend', event => {
+  const start=photoTouch; photoTouch=null;
+  if(!start || event.touches.length || !photoViewer.open) return;
+  const end=[...event.changedTouches].find(touch=>touch.identifier===start.id);
+  if(!end) return;
+  const dx=end.clientX-start.x,dy=end.clientY-start.y;
+  if(Math.abs(dx)<50 || Math.abs(dx)<Math.abs(dy)*1.5) return;
+  suppressPhotoClickUntil=performance.now()+500;
+  showViewerPhoto(viewerIndex+(dx<0?1:-1));
+}, {passive:true});
+photoStage.addEventListener('click', event=>{
+  if(performance.now()<suppressPhotoClickUntil){event.preventDefault();event.stopPropagation();}
+},true);
+photoViewer.addEventListener('close',()=>{photoTouch=null;suppressPhotoClickUntil=0;});
+// Bring news search results into view, including repeated searches on this page.
+function revealNewsResult(){
+  const card=document.getElementById(location.hash.slice(1));
+  if(!card?.matches('.news-list .news-card'))return;
+  card.classList.add('scroll-revealed');
+  requestAnimationFrame(()=>card.scrollIntoView({block:'start',behavior:'instant'}));
+}
+addEventListener('hashchange',revealNewsResult);
+revealNewsResult();
 photoViewer.querySelector('.photo-close').addEventListener('click', () => photoViewer.close());
 photoViewer.querySelector('.photo-prev').addEventListener('click', () => showViewerPhoto(viewerIndex - 1));
 photoViewer.querySelector('.photo-next').addEventListener('click', () => showViewerPhoto(viewerIndex + 1));
@@ -374,11 +406,11 @@ document.querySelectorAll('.project-meta > span').forEach(status => {
 (() => {
   const nav=document.querySelector('#navigation');
   if(!nav)return;
-  const trigger=document.createElement('button');trigger.className='nav-search';trigger.type='button';trigger.setAttribute('aria-label','პროექტებისა და ვიდეოგაკვეთილების ძიება');trigger.setAttribute('aria-haspopup','dialog');
+  const trigger=document.createElement('button');trigger.className='nav-search';trigger.type='button';trigger.setAttribute('aria-label','პროექტების, სიახლეებისა და ვიდეოგაკვეთილების ძიება');trigger.setAttribute('aria-haspopup','dialog');
   trigger.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>';
   nav.append(trigger);
   const modal=document.createElement('dialog');modal.className='project-search';modal.setAttribute('aria-labelledby','project-search-title');
-  modal.innerHTML='<button class="search-close" aria-label="ძიების დახურვა">×</button><h2 id="project-search-title">მოძებნე პროექტი ან გაკვეთილი</h2><label class="sr-only" for="project-search-input">პროექტის ან გაკვეთილის სახელი</label><input id="project-search-input" type="search" placeholder="მაგალითად: ხიდი, Teams, Scratch" autocomplete="off"><p class="search-status" role="status" aria-live="polite"></p><div class="search-results"></div>';
+  modal.innerHTML='<button class="search-close" aria-label="ძიების დახურვა">×</button><h2 id="project-search-title">მოძებნე საიტზე</h2><label class="sr-only" for="project-search-input">პროექტი, სიახლე ან ვიდეოგაკვეთილი</label><input id="project-search-input" type="search" placeholder="მაგალითად: პირველი შეხვედრა, კონკურსი, Teams" autocomplete="off"><p class="search-status" role="status" aria-live="polite"></p><div class="search-results"></div>';
   document.body.append(modal);
   const input=modal.querySelector('input'),results=modal.querySelector('.search-results'),status=modal.querySelector('.search-status');
   let catalogue=null,loading=null;
@@ -391,13 +423,17 @@ document.querySelectorAll('.project-meta > span').forEach(status => {
     if(catalogue)return;
     if(!loading)loading=(async()=>{
       async function getDoc(file){const response=await fetch(file);if(!response.ok)throw Error('Catalogue unavailable');return new DOMParser().parseFromString(await response.text(),'text/html');}
-      const [projectsDoc,lessonsDoc]=await Promise.all([document.querySelector('#projects .project-card')?document:getDoc('index.html'),document.querySelector('.lesson-library')?document:getDoc('tutorials.html')]);
+      const [projectsDoc,lessonsDoc,newsDoc]=await Promise.all([document.querySelector('#projects .project-card')?document:getDoc('index.html'),document.querySelector('.lesson-library')?document:getDoc('tutorials.html'),document.querySelector('.news-list')?document:getDoc('news.html')]);
       const aliases={access:'Teams Office 365 თიმსი თიმსში მშობლებისთვის',design:'გრაფიკული დიზაინი',coding:'Scratch სკრეჩი პროგრამირება',office:'საოფისე ციფრული უნარები',webinars:'ვებინარი მასწავლებლებისთვის'};
       const lessons=[...lessonsDoc.querySelectorAll('.lesson-library .lesson-card')].map(card=>{
         const link=card.querySelector('.lesson-youtube');const id=new URL(link.href,location.href).searchParams.get('v');
         return {kind:'ვიდეო გაკვეთილი',title:card.querySelector('h3').textContent,description:card.querySelector('.lesson-category').textContent,keywords:card.textContent+' '+(aliases[card.dataset.lessonCategory]||''),href:'tutorials.html#lesson-'+id};
       });
-      catalogue=[...parse(projectsDoc),...lessons];
+      const news=[...newsDoc.querySelectorAll('.news-list .news-card[id]')].map(card=>({
+        kind:'სიახლე',title:card.querySelector('h3').textContent,description:card.querySelector('.news-copy > p')?.textContent||'',
+        keywords:card.querySelector('.news-copy').textContent + (card.textContent.includes('კონკურს') ? ' კონკურსი კონკურსები' : ''),href:'news.html#'+card.id
+      }));
+      catalogue=[...parse(projectsDoc),...lessons,...news];
     })().finally(()=>{loading=null});
     return loading;
   }
