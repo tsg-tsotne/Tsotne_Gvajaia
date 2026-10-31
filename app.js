@@ -39,10 +39,21 @@ async function showViewerPhoto(index) {
   }
 }
 function openPhotoViewer(image) {
+  const origin=image.getBoundingClientRect();
   viewerPhotos = [...new Map([...(image.closest('.news-card') || document).querySelectorAll(image.closest('.news-card') ? '.photo-zoom-trigger img' : '.real-project-photo img,.project-gallery img')].map(photo => [photo.src, {src: photo.src, alt: photo.alt}])).values()];
   showViewerPhoto(viewerPhotos.findIndex(photo => photo.src === image.src));
   photoViewer.showModal();
   document.body.classList.add('photo-viewer-open');
+  const version=photoTransitionVersion;
+  enlargedPhoto.decode().catch(()=>{}).then(()=>{
+    if(!photoViewer.open || version!==photoTransitionVersion || matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    const target=enlargedPhoto.getBoundingClientRect();
+    if(!target.width||!target.height)return;
+    photoTransition=enlargedPhoto.animate([
+      {transform:'translate('+(origin.x+origin.width/2-target.x-target.width/2)+'px,'+(origin.y+origin.height/2-target.y-target.height/2)+'px) scale('+origin.width/target.width+','+origin.height/target.height+')',opacity:.55},
+      {transform:'translate(0,0) scale(1)',opacity:1}
+    ],{duration:380,easing:'cubic-bezier(.22,1,.36,1)'});
+  });
 }
 document.querySelectorAll('.real-project-photo').forEach(frame => {
   const image = frame.querySelector('img');
@@ -90,6 +101,7 @@ photoViewer.addEventListener('close',()=>{photoTouch=null;suppressPhotoClickUnti
 function revealNewsResult(){
   const card=document.getElementById(location.hash.slice(1));
   if(!card?.matches('.news-list .news-card'))return;
+  if(card.hidden) document.querySelector('.news-list')?.dispatchEvent(new Event('news-reset'));
   card.classList.add('scroll-revealed');
   requestAnimationFrame(()=>card.scrollIntoView({block:'start',behavior:'instant'}));
 }
@@ -166,10 +178,10 @@ const stories = {
     'ამ ეტაპზე მიმდინარეობს კომპონენტების შეერთებების, აუდიოს დაკვრისა და ეკრანის მუშაობის შემოწმება. პროექტი ჯერ დამუშავების პროცესშია.',
     'დასრულების შემდეგ აქ დაემატება რეალური მოწყობილობის ფოტოები, მუშაობის ვიდეო და მიღებული შედეგის აღწერა.'
   ]},
-  plane: {tag:'RoboSpark / დაგეგმილი აქტივობა',title:'ქაღალდის ფრთები',paragraphs:[
-    'დაგეგმილი შეხვედრის ამოცანაა ორიგამის ტექნიკით თვითმფრინავების დამზადება და მათი ფრენის გამოცდა.',
-    'მოსწავლეები შეადარებენ მოდელებს, დააკვირდებიან ფრთების ფორმას, სიმეტრიასა და გაშვების კუთხეს. შემდეგ შეცვლიან კონსტრუქციას და ხელახლა გამოცდიან.',
-    'აქტივობის შედეგები და ფოტოები ჩატარების შემდეგ დაემატება. მთავარი შეკითხვაა: რას გვასწავლის თითოეული ცდა და როგორ გავაუმჯობესოთ შემდეგი მოდელი?'
+  plane: {tag:'RoboSpark / დასრულებული აქტივობა',title:'ქაღალდის ფრთები',paragraphs:[
+    'მოსწავლეებმა შეისწავლეს თვითმფრინავის მუშაობის პრინციპი და შექმნეს არასტანდარტული კონსტრუქციის ქაღალდის თვითმფრინავები.',
+    'პრაქტიკული გამოცდებით დააკვირდნენ, როგორ მოქმედებს ფორმისა და წონის გადანაწილება ფრენის მანძილზე, სიმაღლესა და სტაბილურობაზე. წარუმატებელი ფრენების გაანალიზებით გააუმჯობესეს საკუთარი მოდელები.',
+    'გამარჯვებულ გუნდს გადაეცა 3D პრინტერით დაბეჭდილი ასაწყობი თვითმფრინავი. აქტივობა დასრულებულია; მისი ფოტოები სიახლეების განყოფილებაშია.'
   ]}
 };
 const dialog = document.querySelector('#project-dialog');
@@ -498,3 +510,51 @@ document.querySelectorAll('.project-meta > span').forEach(status => {
 })();
 
 
+
+// Club filters are independent of the project filters.
+(() => {
+  const list=document.querySelector('.news-list');
+  if(!list)return;
+  const cards=[...list.querySelectorAll('.news-card')];
+  const buttons=[...document.querySelectorAll('[data-news-filter]')];
+  let filterVersion=0;
+  let filterAnimations=[];
+  async function filter(value,animate=true){
+    const version=++filterVersion;
+    filterAnimations.forEach(animation=>animation.cancel());
+    filterAnimations=[];
+    const motion=animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(motion){
+      filterAnimations=cards.filter(card=>!card.hidden).map(card=>card.animate([{opacity:1},{opacity:0}],{duration:120,fill:'forwards'}));
+      await Promise.all(filterAnimations.map(animation=>animation.finished.catch(()=>{})));
+      if(version!==filterVersion)return;
+      filterAnimations.forEach(animation=>animation.cancel());
+    }
+    buttons.forEach(button=>{const active=button.dataset.newsFilter===value;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
+    cards.forEach(card=>{card.hidden=value!=='all'&&card.dataset.newsClub!==value;});
+    if(motion)filterAnimations=cards.filter(card=>!card.hidden).map((card,i)=>card.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}],{duration:240,delay:Math.min(i*35,140),fill:'backwards',easing:'ease-out'}));
+    document.querySelector('#news-filter-status').textContent='ნაჩვენებია '+cards.filter(card=>!card.hidden).length+' სიახლე';
+  }
+  buttons.forEach(button=>button.addEventListener('click',()=>filter(button.dataset.newsFilter)));
+  list.addEventListener('news-reset',()=>filter('all',false));
+  filter('all',false);
+})();
+
+// Pointer-following light is decorative and never captures clicks.
+document.querySelectorAll('.project-card,.club-card,.lesson-card,.news-card,.related-card').forEach(card=>{
+  card.classList.add('spotlight-card');
+  const glow=document.createElement('span');glow.className='card-spotlight';glow.setAttribute('aria-hidden','true');card.append(glow);
+  let frame=0,x=0,y=0;
+  card.addEventListener('pointermove',event=>{
+    if(event.pointerType==='touch'||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    const rect=card.getBoundingClientRect();x=event.clientX-rect.left;y=event.clientY-rect.top;
+    if(!frame)frame=requestAnimationFrame(()=>{glow.style.setProperty('--spot-x',x+'px');glow.style.setProperty('--spot-y',y+'px');frame=0;});
+  });
+});
+// A precisely positioned light accents the existing raster antenna.
+document.querySelectorAll('.robo-card-logo,.robo-hero-logo').forEach(logo=>{
+  const wrapper=document.createElement('span');wrapper.className=logo.classList.contains('robo-card-logo')?'robo-logo-motion robo-logo-small':'robo-logo-motion robo-logo-large';
+  wrapper.tabIndex=0;wrapper.setAttribute('aria-label',logo.alt);
+  logo.replaceWith(wrapper);wrapper.append(logo);
+  const light=document.createElement('span');light.className='robo-antenna-light';light.setAttribute('aria-hidden','true');wrapper.append(light);
+});

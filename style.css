@@ -279,3 +279,14 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 #navigation a.nav-contact .nav-outline{display:block}
 #navigation a.nav-contact:is(:hover,:focus-visible){color:var(--cyan);text-shadow:0 0 14px #65e9ed55}
 #navigation a.nav-contact:is(:hover,:focus-visible){transform:none}
+
+.news-filter-bar{padding-top:10px;padding-bottom:0}.news-filters{margin:0;flex-wrap:wrap}#news-filter-status{color:var(--muted);font-size:12px;margin-top:14px}.news-list .news-card[hidden]{display:none}
+
+/* Subtle interactive accents. */
+.spotlight-card{position:relative;isolation:isolate}.card-spotlight{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;opacity:0;background:radial-gradient(180px circle at var(--spot-x,50%) var(--spot-y,50%),#65e9ed20,transparent 75%);transition:opacity .25s}
+@media(hover:hover) and (pointer:fine){.spotlight-card:hover>.card-spotlight{opacity:1}}
+.robo-logo-motion{display:block;position:relative;aspect-ratio:1954/805;line-height:0}.robo-logo-small{width:180px;max-width:52%}.robo-logo-large{width:100%;max-width:470px;justify-self:center}.robo-logo-motion img{width:100%;max-width:none;height:auto;display:block}.robo-antenna-light{position:absolute;left:21.4%;top:22.7%;width:4.7%;height:15.8%;background:#8cffff;clip-path:polygon(78% 0,61% 40%,100% 40%,31% 100%,32% 60%,0 60%);opacity:0;pointer-events:none}.robo-logo-motion:is(:hover,:focus-visible) .robo-antenna-light{animation:antenna-charge 1.8s ease-in-out infinite;filter:drop-shadow(0 0 8px #65e9ed)}
+@keyframes antenna-charge{0%,100%{opacity:.2}45%,60%{opacity:.95}}
+.photo-viewer[open]{animation:none}
+@media(max-width:760px){.robo-logo-small{width:150px}.robo-logo-large{max-width:340px}}
+@media(prefers-reduced-motion:reduce){.card-spotlight{display:none}.robo-logo-motion:is(:hover,:focus-visible) .robo-antenna-light{animation:none;opacity:.6}}
