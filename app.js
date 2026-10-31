@@ -483,7 +483,7 @@ document.querySelectorAll('.project-meta > span').forEach(status => {
   const icon='<svg viewBox="0 0 24 24" aria-hidden="true"><path style="fill:currentColor;stroke:none" d="M14 21v-8h3l.5-4H14V7c0-1.1.4-2 2-2h2V1.5C17.2 1.2 16.1 1 15 1c-3.2 0-5 2-5 5v3H7v4h3v8z"/></svg>';
   function addButton(container,title,description,href){
     const button=document.createElement('a');button.className='project-share';
-    const projectURL=new URL(href,location.href).href;
+    const projectURL=new URL(href,'https://tsg-tsotne.github.io/Tsotne_Gvajaia/').href;
     button.href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(projectURL);
     button.target='_blank';button.rel='noopener noreferrer';
     button.innerHTML=icon+'<span>Facebook-ზე გაზიარება</span>';
@@ -492,15 +492,15 @@ document.querySelectorAll('.project-meta > span').forEach(status => {
   }
   document.querySelectorAll('.project-card').forEach(card=>{
     const body=card.querySelector('.project-body'),action=body?.querySelector('.text-link');if(!action)return;
-    const href=action.getAttribute('href')||(action.dataset.project?'index.html#project='+encodeURIComponent(action.dataset.project):null);if(!href)return;
+    const href=action.getAttribute('href')||(action.dataset.project?'project-'+encodeURIComponent(action.dataset.project)+'.html':null);if(!href)return;
     addButton(body,card.querySelector('h3').textContent,body.querySelector('p')?.textContent||'',href);
   });
   document.querySelectorAll('.news-card').forEach(card=>{
     const body=card.querySelector('.news-copy');if(!body||!card.id)return;
-    addButton(body,card.querySelector('h3').textContent,body.querySelector('p')?.textContent||'','news.html#'+card.id);
+    addButton(body,card.querySelector('h3').textContent,body.querySelector('p')?.textContent||'',card.dataset.shareUrl||'news.html#'+card.id);
   });
   const intro=document.querySelector('.traffic-intro .club-intro-grid > div');
-  if(intro){const url=new URL(location.href);url.search='';url.hash='';addButton(intro,document.querySelector('h1').textContent,document.querySelector('.club-description')?.textContent||'',url.href);}
+  if(intro){const url=new URL(location.pathname.split('/').pop(),'https://tsg-tsotne.github.io/Tsotne_Gvajaia/');addButton(intro,document.querySelector('h1').textContent,document.querySelector('.club-description')?.textContent||'',url.href);}
   function openSharedStory(){
     const match=location.hash.match(/^#project=([a-z-]+)$/);if(!match||!stories[match[1]])return;
     const trigger=document.querySelector(`[data-project="${match[1]}"]`);if(!trigger)return;
@@ -517,6 +517,7 @@ document.querySelectorAll('.project-meta > span').forEach(status => {
   if(!list)return;
   const cards=[...list.querySelectorAll('.news-card')];
   const buttons=[...document.querySelectorAll('[data-news-filter]')];
+  if(!buttons.length)return;
   let filterVersion=0;
   let filterAnimations=[];
   async function filter(value,animate=true){
