@@ -303,3 +303,12 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 @media(prefers-reduced-motion:reduce){.club-card.robo:is(:hover,:focus-within) .robo-eye-lid,.robo-logo-motion:is(:hover,:focus-visible) .robo-eye-lid{animation:none}.club-card.robo:is(:hover,:focus-within) .robo-antenna-light{animation:none;opacity:.6}}
 .club-card.robo .club-top{min-width:0}.club-card.robo .robo-logo-small{min-width:0;flex-shrink:1}
 @media(max-width:760px){.club-grid{grid-template-columns:minmax(0,1fr)}.club-card{min-width:0}}
+
+/* Eyes cover the printed pupils and move within the original cyan eye shapes. */
+.robo-logo-small{width:310px;max-width:64%}
+.robo-tracking-eye{position:absolute;top:46.9%;width:3.6%;height:8.9%;border-radius:50%;background:#3ee0f1;overflow:hidden;pointer-events:none}
+.robo-pupil{position:absolute;width:60%;height:65%;left:20%;top:17.5%;border-radius:50%;background:#03121e;transition:transform .1s ease-out}
+.robo-pupil:after{content:'';position:absolute;width:29%;height:29%;left:8%;top:4%;background:white;border-radius:50%}
+.robo-eye-lid{z-index:1}
+@media(max-width:760px){.robo-logo-small{width:255px;max-width:64%}}
+@media(prefers-reduced-motion:reduce){.robo-pupil{transition:none}}

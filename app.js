@@ -558,5 +558,26 @@ document.querySelectorAll('.robo-card-logo,.robo-hero-logo').forEach(logo=>{
   wrapper.tabIndex=0;wrapper.setAttribute('aria-label',logo.alt);
   logo.replaceWith(wrapper);wrapper.append(logo);
   const light=document.createElement('span');light.className='robo-antenna-light';light.setAttribute('aria-hidden','true');wrapper.append(light);
+  const pupils=[];
+  ['left','right'].forEach(side=>{
+    const eye=document.createElement('span');eye.className='robo-tracking-eye robo-eye-'+side;eye.setAttribute('aria-hidden','true');
+    const pupil=document.createElement('span');pupil.className='robo-pupil';eye.append(pupil);wrapper.append(eye);pupils.push({eye,pupil});
+  });
+  const preference=matchMedia('(prefers-reduced-motion: reduce)');
+  let eyeFrame=0,mouseX=0,mouseY=0;
+  function resetEyes(){cancelAnimationFrame(eyeFrame);eyeFrame=0;pupils.forEach(({pupil})=>pupil.style.transform='translate(0,0)');}
+  document.addEventListener('pointermove',event=>{
+    if(event.pointerType==='touch'||preference.matches)return;
+    mouseX=event.clientX;mouseY=event.clientY;
+    if(eyeFrame)return;
+    eyeFrame=requestAnimationFrame(()=>{
+      eyeFrame=0;const area=wrapper.getBoundingClientRect();
+      if(area.bottom<0||area.top>innerHeight)return;
+      pupils.forEach(({eye,pupil})=>{const r=eye.getBoundingClientRect();const dx=mouseX-r.x-r.width/2,dy=mouseY-r.y-r.height/2;const distance=Math.hypot(dx,dy);const radius=Math.min(r.width,r.height)*.19;const fraction=Math.min(distance/100,1);pupil.style.transform='translate('+(distance?dx/distance*radius*fraction:0)+'px,'+(distance?dy/distance*radius*fraction:0)+'px)';});
+    });
+  },{passive:true});
+  document.documentElement.addEventListener('pointerleave',resetEyes);
+  preference.addEventListener('change',resetEyes);
+  window.addEventListener('blur',resetEyes);
   ['left','right'].forEach(side=>{const lid=document.createElement('span');lid.className='robo-eye-lid robo-eye-'+side;lid.setAttribute('aria-hidden','true');wrapper.append(lid);});
 });
