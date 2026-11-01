@@ -344,3 +344,12 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 @keyframes steam-art-paint{0%,100%{transform:rotate(0)}35%{transform:rotate(-8deg)}70%{transform:rotate(8deg)}}
 @keyframes steam-math-pulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(.94);filter:brightness(1.2)}}
 @media(prefers-reduced-motion:reduce){.steam-logo-motion .steam-art,.steam-logo-motion .steam-math{animation:none!important}}
+
+/* A glowing processor sends short signals through its actual contacts. */
+.steam-chip-circuits{pointer-events:none;opacity:0}.steam-chip-trace{fill:none;stroke:#8effff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:22 78;stroke-dashoffset:100;filter:drop-shadow(0 0 3px #00c9ff)}.steam-chip-core{fill:#9cffff;transform-origin:278px 213px;filter:drop-shadow(0 0 9px #00cfff)}
+.club-card.stem:is(:hover,:focus-within) .steam-chip-circuits,.steam-logo-motion:is(:hover,:focus-visible) .steam-chip-circuits{opacity:1}
+.club-card.stem:is(:hover,:focus-within) .steam-chip-trace,.steam-logo-motion:is(:hover,:focus-visible) .steam-chip-trace{animation:chip-signal 2s var(--pulse-delay) linear infinite}
+.club-card.stem:is(:hover,:focus-within) .steam-chip-core,.steam-logo-motion:is(:hover,:focus-visible) .steam-chip-core{animation:chip-heartbeat 2s ease-in-out infinite}
+@keyframes chip-signal{0%{stroke-dashoffset:100;opacity:0}15%,70%{opacity:1}100%{stroke-dashoffset:-22;opacity:0}}
+@keyframes chip-heartbeat{0%,100%{opacity:.25;transform:scale(.9)}35%,55%{opacity:1;transform:scale(1.05)}}
+@media(prefers-reduced-motion:reduce){.steam-logo-motion .steam-chip-trace,.steam-logo-motion .steam-chip-core{animation:none!important}.steam-chip-trace{stroke-dashoffset:0}.steam-chip-circuits{filter:none}}
