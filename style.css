@@ -353,3 +353,15 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 @keyframes chip-signal{0%{stroke-dashoffset:100;opacity:0}15%,70%{opacity:1}100%{stroke-dashoffset:-22;opacity:0}}
 @keyframes chip-heartbeat{0%,100%{opacity:.25;transform:scale(.9)}35%,55%{opacity:1;transform:scale(1.05)}}
 @media(prefers-reduced-motion:reduce){.steam-logo-motion .steam-chip-trace,.steam-logo-motion .steam-chip-core{animation:none!important}.steam-chip-trace{stroke-dashoffset:0}.steam-chip-circuits{filter:none}}
+
+/* Wires grow inward, then assemble the processor. */
+.steam-chip-wire{fill:none;stroke:#159bd1;stroke-width:5;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;filter:drop-shadow(0 0 2px #65e9ed)}.steam-chip-contact{fill:#179bd1}.steam-chip-outline{fill:white;stroke:#159bd1;stroke-width:6;stroke-dasharray:100;stroke-dashoffset:100;opacity:0}
+.club-card.stem:is(:hover,:focus-within) .steam-chip-wire,.steam-logo-motion:is(:hover,:focus-visible) .steam-chip-wire{animation:chip-wire-build 4.8s var(--wire-delay) ease-in-out infinite}
+.club-card.stem:is(:hover,:focus-within) .steam-chip-outline,.steam-logo-motion:is(:hover,:focus-visible) .steam-chip-outline{animation:chip-outline-build 4.8s ease-in-out infinite}
+.club-card.stem:is(:hover,:focus-within) .steam-chip-core,.steam-logo-motion:is(:hover,:focus-visible) .steam-chip-core{fill:#169bd1;animation:chip-core-build 4.8s ease-in-out infinite}
+@keyframes chip-wire-build{0%,8%{stroke-dashoffset:100;opacity:.2}40%,80%{stroke-dashoffset:0;opacity:1}95%,100%{stroke-dashoffset:100;opacity:0}}
+@keyframes chip-outline-build{0%,25%{stroke-dashoffset:100;opacity:0}48%,82%{stroke-dashoffset:0;opacity:1}97%,100%{stroke-dashoffset:100;opacity:0}}
+@keyframes chip-core-build{0%,40%{transform:scale(0);opacity:0}55%,78%{transform:scale(1);opacity:1;filter:drop-shadow(0 0 7px #15dfff)}95%,100%{transform:scale(0);opacity:0}}
+.club-card.stem:is(:hover,:focus-within) .steam-math,.steam-logo-motion:is(:hover,:focus-visible) .steam-math{animation:steam-math-turn 4s ease-in-out infinite}
+@keyframes steam-math-turn{0%,10%{transform:rotate(0);filter:brightness(1)}35%,50%{transform:rotate(90deg);filter:brightness(1.25) drop-shadow(0 0 6px #65e9ed)}75%,85%{transform:rotate(-90deg);filter:brightness(1.1)}100%{transform:rotate(0);filter:brightness(1)}}
+@media(prefers-reduced-motion:reduce){.steam-logo-motion .steam-chip-wire,.steam-logo-motion .steam-chip-outline{animation:none!important;stroke-dashoffset:0;opacity:1}.steam-logo-motion .steam-chip-core{animation:none!important;transform:none;opacity:1}}
