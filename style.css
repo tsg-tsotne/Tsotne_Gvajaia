@@ -290,3 +290,16 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 .photo-viewer[open]{animation:none}
 @media(max-width:760px){.robo-logo-small{width:150px}.robo-logo-large{max-width:340px}}
 @media(prefers-reduced-motion:reduce){.card-spotlight{display:none}.robo-logo-motion:is(:hover,:focus-visible) .robo-antenna-light{animation:none;opacity:.6}}
+
+/* Larger RoboSpark mark with synchronized card-hover expression. */
+.robo-logo-small{width:290px;max-width:62%}
+.robo-eye-lid{position:absolute;top:46.6%;width:3.85%;height:9.4%;border-radius:50%;background:#061728;transform:scaleY(0);pointer-events:none;transform-origin:center}
+.robo-eye-left{left:18.05%}.robo-eye-right{left:24.2%}
+.robo-eye-lid:after{content:'';position:absolute;left:8%;right:8%;top:47%;height:8%;border-radius:50%;background:#65e9ed}
+.club-card.robo:is(:hover,:focus-within) .robo-eye-lid,.robo-logo-motion:is(:hover,:focus-visible) .robo-eye-lid{animation:robo-blink 3.8s ease-in-out infinite}
+.club-card.robo:is(:hover,:focus-within) .robo-antenna-light{animation:antenna-charge 1.8s ease-in-out infinite;filter:drop-shadow(0 0 8px #65e9ed)}
+@keyframes robo-blink{0%,12%,20%,26%,34%,100%{transform:scaleY(0)}16%,30%{transform:scaleY(1)}}
+@media(max-width:760px){.robo-logo-small{width:240px;max-width:62%}}
+@media(prefers-reduced-motion:reduce){.club-card.robo:is(:hover,:focus-within) .robo-eye-lid,.robo-logo-motion:is(:hover,:focus-visible) .robo-eye-lid{animation:none}.club-card.robo:is(:hover,:focus-within) .robo-antenna-light{animation:none;opacity:.6}}
+.club-card.robo .club-top{min-width:0}.club-card.robo .robo-logo-small{min-width:0;flex-shrink:1}
+@media(max-width:760px){.club-grid{grid-template-columns:minmax(0,1fr)}.club-card{min-width:0}}

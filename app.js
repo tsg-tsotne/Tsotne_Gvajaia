@@ -558,4 +558,5 @@ document.querySelectorAll('.robo-card-logo,.robo-hero-logo').forEach(logo=>{
   wrapper.tabIndex=0;wrapper.setAttribute('aria-label',logo.alt);
   logo.replaceWith(wrapper);wrapper.append(logo);
   const light=document.createElement('span');light.className='robo-antenna-light';light.setAttribute('aria-hidden','true');wrapper.append(light);
+  ['left','right'].forEach(side=>{const lid=document.createElement('span');lid.className='robo-eye-lid robo-eye-'+side;lid.setAttribute('aria-hidden','true');wrapper.append(lid);});
 });
