@@ -335,3 +335,12 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 .club-card.stem:is(:hover,:focus-within) .steam-tools,.steam-logo-motion:is(:hover,:focus-visible) .steam-tools{animation-duration:1.8s}
 @keyframes steam-wiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-12deg)}65%{transform:rotate(12deg)}}
 @media(prefers-reduced-motion:reduce){.steam-logo-motion .steam-atom,.steam-logo-motion .steam-tools,.steam-logo-motion .steam-chip-shine{animation:none!important}}
+
+/* The full STEAM emblem also works on the club page. */
+.club-page-logo.steam-logo-motion{aspect-ratio:1000/562;height:auto;line-height:0}
+.steam-art{transform-origin:735px 221px}.steam-math{transform-origin:872px 416px}
+.club-card.stem:is(:hover,:focus-within) .steam-art,.steam-logo-motion:is(:hover,:focus-visible) .steam-art{animation:steam-art-paint 2.3s ease-in-out infinite}
+.club-card.stem:is(:hover,:focus-within) .steam-math,.steam-logo-motion:is(:hover,:focus-visible) .steam-math{animation:steam-math-pulse 2s ease-in-out infinite}
+@keyframes steam-art-paint{0%,100%{transform:rotate(0)}35%{transform:rotate(-8deg)}70%{transform:rotate(8deg)}}
+@keyframes steam-math-pulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(.94);filter:brightness(1.2)}}
+@media(prefers-reduced-motion:reduce){.steam-logo-motion .steam-art,.steam-logo-motion .steam-math{animation:none!important}}
