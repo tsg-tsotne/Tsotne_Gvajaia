@@ -557,15 +557,33 @@ document.querySelectorAll('.robo-card-logo,.robo-hero-logo').forEach(logo=>{
   const wrapper=document.createElement('span');wrapper.className=logo.classList.contains('robo-card-logo')?'robo-logo-motion robo-logo-small':'robo-logo-motion robo-logo-large';
   wrapper.tabIndex=0;wrapper.setAttribute('aria-label',logo.alt);
   logo.replaceWith(wrapper);wrapper.append(logo);
-  const light=document.createElement('span');light.className='robo-antenna-light';light.setAttribute('aria-hidden','true');wrapper.append(light);
+  wrapper.setAttribute('role','button');wrapper.setAttribute('aria-label',logo.alt+' — ანტენის ნაპერწკლები');
+  const head=document.createElement('span');head.className='robo-moving-head';head.setAttribute('aria-hidden','true');
+  const headImage=logo.cloneNode();headImage.removeAttribute('class');headImage.alt='';head.append(headImage);wrapper.append(head);
+  logo.classList.add('robo-static-wordmark');
+  function spark(){
+    if(preference.matches)return;
+    wrapper.querySelectorAll('.robo-spark').forEach(node=>node.remove());
+    const r=wrapper.getBoundingClientRect(),tip=light.getBoundingClientRect();
+    for(let i=0;i<9;i++){
+      const dot=document.createElement('span');dot.className='robo-spark';dot.setAttribute('aria-hidden','true');
+      dot.style.left=(tip.x+tip.width/2-r.x)+'px';dot.style.top=(tip.y-r.y)+'px';wrapper.append(dot);
+      const angle=(i/9)*Math.PI*2,distance=18+Math.random()*24;
+      const animation=dot.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+Math.cos(angle)*distance+'px,'+Math.sin(angle)*distance+'px) scale(.15)',opacity:0}],{duration:550,easing:'cubic-bezier(.1,.6,.3,1)'});
+      animation.finished.finally(()=>dot.remove());
+    }
+  }
+  wrapper.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();spark();});
+  wrapper.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();spark();}});
+  const light=document.createElement('span');light.className='robo-antenna-light';light.setAttribute('aria-hidden','true');head.append(light);
   const pupils=[];
   ['left','right'].forEach(side=>{
     const eye=document.createElement('span');eye.className='robo-tracking-eye robo-eye-'+side;eye.setAttribute('aria-hidden','true');
-    const pupil=document.createElement('span');pupil.className='robo-pupil';eye.append(pupil);wrapper.append(eye);pupils.push({eye,pupil});
+    const pupil=document.createElement('span');pupil.className='robo-pupil';eye.append(pupil);head.append(eye);pupils.push({eye,pupil});
   });
   const preference=matchMedia('(prefers-reduced-motion: reduce)');
   let eyeFrame=0,mouseX=0,mouseY=0;
-  function resetEyes(){cancelAnimationFrame(eyeFrame);eyeFrame=0;pupils.forEach(({pupil})=>pupil.style.transform='translate(0,0)');}
+  function resetEyes(){cancelAnimationFrame(eyeFrame);eyeFrame=0;head.style.transform='none';pupils.forEach(({pupil})=>pupil.style.transform='translate(0,0)');}
   document.addEventListener('pointermove',event=>{
     if(event.pointerType==='touch'||preference.matches)return;
     mouseX=event.clientX;mouseY=event.clientY;
@@ -573,11 +591,51 @@ document.querySelectorAll('.robo-card-logo,.robo-hero-logo').forEach(logo=>{
     eyeFrame=requestAnimationFrame(()=>{
       eyeFrame=0;const area=wrapper.getBoundingClientRect();
       if(area.bottom<0||area.top>innerHeight)return;
+      const tilt=Math.max(-5,Math.min(5,(mouseX-area.x-area.width*.23)/70));
+      const nod=Math.max(-2,Math.min(2,(mouseY-area.y-area.height*.5)/150));
+      head.style.transform='translateY('+nod+'px) rotate('+tilt+'deg)';
       pupils.forEach(({eye,pupil})=>{const r=eye.getBoundingClientRect();const dx=mouseX-r.x-r.width/2,dy=mouseY-r.y-r.height/2;const distance=Math.hypot(dx,dy);const radius=Math.min(r.width,r.height)*.19;const fraction=Math.min(distance/100,1);pupil.style.transform='translate('+(distance?dx/distance*radius*fraction:0)+'px,'+(distance?dy/distance*radius*fraction:0)+'px)';});
     });
   },{passive:true});
   document.documentElement.addEventListener('pointerleave',resetEyes);
   preference.addEventListener('change',resetEyes);
   window.addEventListener('blur',resetEyes);
-  ['left','right'].forEach(side=>{const lid=document.createElement('span');lid.className='robo-eye-lid robo-eye-'+side;lid.setAttribute('aria-hidden','true');wrapper.append(lid);});
+  ['left','right'].forEach(side=>{const lid=document.createElement('span');lid.className='robo-eye-lid robo-eye-'+side;lid.setAttribute('aria-hidden','true');head.append(lid);});
 });
+// Animate isolated parts of the original STEAM mark, keeping its other elements still.
+document.querySelectorAll('img.club-logo').forEach((logo,index)=>{
+  const wrapper=document.createElement('span');wrapper.className='club-logo steam-logo-motion';wrapper.tabIndex=0;wrapper.setAttribute('aria-label',logo.alt);
+  const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 1000 562');svg.setAttribute('aria-hidden','true');
+  const key='steam-parts-'+index;
+  svg.innerHTML=`<defs><mask id="${key}-base"><rect width="1000" height="562" fill="white"/><circle cx="134" cy="410" r="102" fill="black"/><circle cx="508" cy="135" r="99" fill="black"/></mask><clipPath id="${key}-atom"><circle cx="134" cy="410" r="102"/></clipPath><clipPath id="${key}-tools"><circle cx="508" cy="135" r="99"/></clipPath><clipPath id="${key}-chip"><circle cx="277" cy="211" r="101"/></clipPath><linearGradient id="${key}-shine"><stop stop-color="#65e9ed" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".8"/><stop offset="1" stop-color="#65e9ed" stop-opacity="0"/></linearGradient></defs><image href="assets/steam-logo.png" width="1000" height="562" mask="url(#${key}-base)"/><g class="steam-atom" clip-path="url(#${key}-atom)"><image href="assets/steam-logo.png" width="1000" height="562"/></g><g class="steam-tools" clip-path="url(#${key}-tools)"><image href="assets/steam-logo.png" width="1000" height="562"/></g><g clip-path="url(#${key}-chip)"><rect class="steam-chip-shine" x="140" y="105" width="65" height="215" fill="url(#${key}-shine)"/></g>`;
+  logo.replaceWith(wrapper);wrapper.append(svg);
+});
+// Small bounded card tilt, with native touch scrolling left untouched.
+(() => {
+  const preference=matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll('.project-card').forEach(card=>{
+    card.classList.add('pointer-tilt');let frame=0,x=0,y=0;
+    const reset=()=>{cancelAnimationFrame(frame);frame=0;card.style.removeProperty('--tilt-x');card.style.removeProperty('--tilt-y');};
+    card.addEventListener('pointermove',event=>{
+      if(event.pointerType!=='mouse'||preference.matches)return;
+      const r=card.getBoundingClientRect();x=Math.max(-1,Math.min(1,(event.clientX-r.left)/r.width*2-1));y=Math.max(-1,Math.min(1,(event.clientY-r.top)/r.height*2-1));
+      if(!frame)frame=requestAnimationFrame(()=>{card.style.setProperty('--tilt-x',(-y*2.5)+'deg');card.style.setProperty('--tilt-y',(x*2.5)+'deg');frame=0;});
+    },{passive:true});
+    card.addEventListener('pointerleave',reset);card.addEventListener('pointercancel',reset);preference.addEventListener('change',reset);window.addEventListener('blur',reset);
+  });
+})();
+// One greeting per page visit when the robot becomes visible.
+(() => {
+  const robot=document.querySelector('#clubs .robo-logo-motion');
+  if(!robot||!('IntersectionObserver' in window))return;
+  const preference=matchMedia('(prefers-reduced-motion: reduce)');let animations=[];
+  const observer=new IntersectionObserver(entries=>{
+    if(!entries.some(entry=>entry.isIntersecting))return;
+    observer.disconnect();robot.dataset.greeted='true';
+    if(preference.matches)return;
+    robot.querySelectorAll('.robo-eye-lid').forEach(lid=>animations.push(lid.animate([{transform:'scaleY(0)'},{transform:'scaleY(1)',offset:.45},{transform:'scaleY(0)'}],{duration:600,delay:350})));
+    const light=robot.querySelector('.robo-antenna-light');
+    animations.push(light.animate([{opacity:0},{opacity:1,offset:.4},{opacity:0}],{duration:1200}));
+  },{threshold:.65});
+  observer.observe(robot);preference.addEventListener('change',()=>{if(preference.matches)animations.forEach(a=>a.cancel());});
+})();
