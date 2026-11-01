@@ -329,3 +329,9 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 @keyframes steam-orbit{to{transform:rotate(360deg)}}@keyframes steam-wiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-6deg)}65%{transform:rotate(6deg)}}@keyframes steam-scan{0%{transform:translateX(-50px);opacity:0}20%,65%{opacity:.65}85%,100%{transform:translateX(240px);opacity:0}}
 @media(hover:hover) and (pointer:fine){.project-card.pointer-tilt{transform:perspective(1000px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg));transition:transform .18s ease-out}}
 @media(prefers-reduced-motion:reduce){.steam-logo-motion .steam-atom,.steam-logo-motion .steam-tools,.steam-logo-motion .steam-chip-shine{animation:none!important}.project-card.pointer-tilt{transform:none;transition:none}}
+
+/* Clearer logo motion; versioned assets prevent stale public scripts. */
+.club-card.stem:is(:hover,:focus-within) .steam-atom,.steam-logo-motion:is(:hover,:focus-visible) .steam-atom{animation-duration:3.5s}
+.club-card.stem:is(:hover,:focus-within) .steam-tools,.steam-logo-motion:is(:hover,:focus-visible) .steam-tools{animation-duration:1.8s}
+@keyframes steam-wiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-12deg)}65%{transform:rotate(12deg)}}
+@media(prefers-reduced-motion:reduce){.steam-logo-motion .steam-atom,.steam-logo-motion .steam-tools,.steam-logo-motion .steam-chip-shine{animation:none!important}}
