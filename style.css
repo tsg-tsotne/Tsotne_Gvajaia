@@ -514,3 +514,14 @@ html[data-theme="light"] .project-search::backdrop{background:#172b4866}
 @keyframes robot-greeting-blink{0%,42%,50%,100%{transform:scaleY(1)}46%{transform:scaleY(.1)}}
 @media(max-width:760px){.robot-greeting{right:16px;bottom:18px;gap:10px}.greeting-robot{width:74px;flex-basis:74px}}
 @media(prefers-reduced-motion:reduce){.robot-greeting,.greeting-hand,.greeting-eyes{animation:none}}
+/* A short, non-blocking STEAM discovery constellation. */
+.steam-discovery{position:fixed;height:290px;translate:-50% -50%;z-index:1300;pointer-events:none;animation:steam-discovery-life 4.3s ease both}
+.steam-discovery-orbit{position:absolute;left:50%;top:50%;width:200px;height:200px;border:1px dashed var(--cyan);border-radius:50%;opacity:.35;translate:-50% -50%;box-shadow:0 0 30px #65e9ed20;animation:steam-discovery-orbit 4s linear}
+.steam-discovery-symbol{position:absolute;left:50%;top:50%;display:flex;align-items:center;flex-direction:column;gap:3px;translate:-50% -50%;color:var(--symbol-color);animation:steam-discovery-unfold .7s cubic-bezier(.2,1.3,.4,1) var(--delay) both}
+.steam-discovery-symbol b{display:grid;place-items:center;width:47px;height:47px;font-size:27px;line-height:1;border:1px solid currentColor;border-radius:15px;background:var(--panel);box-shadow:0 0 20px color-mix(in srgb,var(--symbol-color) 35%,transparent)}
+.steam-discovery-symbol small{font-size:9px;white-space:nowrap;padding:1px 5px;border-radius:5px;background:var(--panel);color:var(--text)}
+.steam-discovery-message{position:absolute;left:50%;top:50%;translate:-50% -50%;width:125px;text-align:center;font-size:12px;font-weight:700;line-height:1.8;color:var(--text);background:var(--panel);padding:10px;border:1px solid var(--line);border-radius:12px}
+@keyframes steam-discovery-unfold{from{opacity:0;transform:translate(0,0) scale(.3)}to{opacity:1;transform:translate(var(--dx),var(--dy)) scale(1)}}
+@keyframes steam-discovery-orbit{from{transform:rotate(0deg) scale(.5)}to{transform:rotate(75deg) scale(1.1)}}
+@keyframes steam-discovery-life{0%{opacity:0}8%,82%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.steam-discovery,.steam-discovery-orbit,.steam-discovery-symbol{animation:none}.steam-discovery-symbol{transform:translate(var(--dx),var(--dy))}}

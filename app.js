@@ -770,3 +770,27 @@ document.querySelectorAll('.project-card').forEach(card=>{
   try{sessionStorage.setItem('club-logo-taps',JSON.stringify(memory));}catch{}
  });
 })();
+
+// STEAM discovery: three quick taps unfold five colorful disciplines.
+(() => {
+ const symbols=[['⚛','მეცნიერება','#389cff'],['⌘','ტექნოლოგია','#27cdda'],['⚙','ინჟინერია','#ffad32'],['✎','ხელოვნება','#b374ff'],['∑','მათემატიკა','#83ce45']];
+ document.querySelectorAll('.steam-logo-motion').forEach(logo=>{
+  let taps=0,last=0,cooldown=0;
+  const activate=event=>{
+   if(event.type==='keydown'&&!['Enter',' '].includes(event.key))return;
+   if(event.type==='keydown'&&event.repeat)return;
+   if(event.ctrlKey||event.metaKey||event.altKey||event.shiftKey)return;
+   if(event.type==='keydown')event.preventDefault();
+   const now=Date.now();if(now<cooldown)return;taps=now-last<2500?taps+1:1;last=now;if(taps<3)return;
+   event.preventDefault();event.stopPropagation();taps=0;cooldown=now+6500;
+   document.querySelector('.steam-discovery')?.remove();
+   const rect=logo.getBoundingClientRect(),size=Math.min(310,innerWidth-24),cx=Math.max(size/2+12,Math.min(innerWidth-size/2-12,rect.left+rect.width/2)),cy=Math.max(150,Math.min(innerHeight-150,rect.top+rect.height/2));
+   const burst=document.createElement('div');burst.className='steam-discovery';burst.style.left=cx+'px';burst.style.top=cy+'px';burst.style.width=size+'px';
+   const orbit=document.createElement('span');orbit.className='steam-discovery-orbit';orbit.setAttribute('aria-hidden','true');burst.append(orbit);
+   symbols.forEach(([icon,label,color],i)=>{const angle=(-90+i*72)*Math.PI/180,node=document.createElement('span');node.className='steam-discovery-symbol';node.style.setProperty('--dx',Math.cos(angle)*size*.36+'px');node.style.setProperty('--dy',Math.sin(angle)*108+'px');node.style.setProperty('--symbol-color',color);node.style.setProperty('--delay',i*70+'ms');const mark=document.createElement('b');mark.textContent=icon;mark.setAttribute('aria-hidden','true');const text=document.createElement('small');text.textContent=label;node.append(mark,text);burst.append(node);});
+   const message=document.createElement('span');message.className='steam-discovery-message';message.setAttribute('role','status');message.textContent='5 მიმართულება. უსაზღვრო იდეები!';burst.append(message);document.body.append(burst);
+   const close=()=>{burst.remove();document.removeEventListener('keydown',escape);};const escape=e=>{if(e.key==='Escape')close();};document.addEventListener('keydown',escape);setTimeout(close,4300);
+  };
+  logo.addEventListener('click',activate);logo.addEventListener('keydown',activate);
+ });
+})();
