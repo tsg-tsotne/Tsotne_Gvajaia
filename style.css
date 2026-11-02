@@ -457,3 +457,9 @@ html[data-theme="light"] .news-filter-indicator{background:#007c8810;border-colo
 @media(min-width:761px) and (max-width:1300px){#navigation{gap:10px}.header{padding-inline:24px}.header .brand{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.theme-toggle,body,.header,.club-card,.project-card,.lesson-card,.news-card,.contact,dialog{transition:none}.theme-toggle:hover{transform:none}}
 
+
+/* Reveal the new theme from its switch, while preserving the page position. */
+html.theme-reveal::view-transition-old(root),html.theme-reveal::view-transition-new(root){animation:none;mix-blend-mode:normal}
+html.theme-reveal::view-transition-old(root){z-index:1}
+html.theme-reveal::view-transition-new(root){z-index:2}
+html.theme-reveal,html.theme-reveal *{transition:none!important}

@@ -711,6 +711,17 @@ document.querySelectorAll('.header .logo-hologram').forEach(logo=>{
  const sun='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M5 19l1.4-1.4M17.6 6.4 19 5"/></svg>';
  const moon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"/></svg>';
  const sync=()=>{const light=document.documentElement.dataset.theme==='light';button.innerHTML=light?moon:sun;button.setAttribute('aria-label',light?'მუქ თემაზე გადართვა':'ღია თემაზე გადართვა');button.title=button.getAttribute('aria-label');document.querySelector('meta[name="theme-color"]')?.setAttribute('content',light?'#f4f7fc':'#080c16');};
- button.addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('club-theme',document.documentElement.dataset.theme);}catch{}sync();});
+ let switching=false;
+ button.addEventListener('click',async()=>{
+  if(switching)return;
+  const apply=()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('club-theme',document.documentElement.dataset.theme);}catch{}sync();};
+  if(!document.startViewTransition||matchMedia('(prefers-reduced-motion: reduce)').matches){apply();return;}
+  const r=button.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+  const radius=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
+  switching=true;document.documentElement.classList.add('theme-reveal');
+  const transition=document.startViewTransition(apply);
+  try{await transition.ready;await document.documentElement.animate({clipPath:['circle(0px at '+x+'px '+y+'px)','circle('+radius+'px at '+x+'px '+y+'px)']},{duration:620,easing:'cubic-bezier(.22,1,.36,1)',pseudoElement:'::view-transition-new(root)'}).finished;}catch{transition.skipTransition();}
+  finally{await transition.finished.catch(()=>{});document.documentElement.classList.remove('theme-reveal');switching=false;}
+ });
  window.addEventListener('storage',event=>{if(event.key==='club-theme'){document.documentElement.dataset.theme=event.newValue==='light'?'light':'dark';sync();}});sync();
 })();
