@@ -698,3 +698,8 @@ document.querySelectorAll('img.club-logo, img.club-page-logo').forEach((logo,ind
  const stop=()=>{cancelAnimationFrame(frame);frame=0;reset();};
  document.documentElement.addEventListener('pointerleave',stop);document.addEventListener('pointercancel',stop);window.addEventListener('blur',stop);window.addEventListener('scroll',stop,{passive:true});reduced.addEventListener('change',stop);fine.addEventListener('change',stop);
 })();
+
+// One gentle signal from the header logo, with long quiet intervals.
+document.querySelectorAll('.header .logo-hologram').forEach(logo=>{
+ const signal=document.createElement('span');signal.className='logo-signal';signal.setAttribute('aria-hidden','true');logo.prepend(signal);
+});
