@@ -3,58 +3,59 @@ const menuButton = document.querySelector('.menu-toggle');
 const photoViewer = document.createElement('dialog');
 photoViewer.className = 'photo-viewer';
 photoViewer.setAttribute('aria-label', 'ფოტოს გაფართოებული ხედი');
-photoViewer.innerHTML = `<div class="photo-viewer-toolbar"><span class="photo-counter" aria-live="polite"></span><button class="photo-close" aria-label="ფოტოს დახურვა" autofocus>×</button></div><div class="photo-viewer-stage"><button class="photo-prev" aria-label="წინა ფოტო">‹</button><img class="photo-enlarged" alt=""><button class="photo-next" aria-label="შემდეგი ფოტო">›</button></div><p class="photo-viewer-caption" aria-live="polite"></p>`;
+photoViewer.innerHTML = `<div class="photo-viewer-toolbar"><span class="photo-counter" aria-live="polite"></span><div class="photo-tools"><button class="photo-zoom-button" type="button" aria-label="ფოტოს გადიდება" aria-pressed="false">＋</button><button class="photo-fullscreen" type="button" aria-label="სრული ეკრანი" aria-pressed="false">⛶</button><button class="photo-close" aria-label="ფოტოს დახურვა" autofocus>×</button></div></div><div class="photo-viewer-stage"><button class="photo-prev" aria-label="წინა ფოტო">‹</button><div class="photo-viewport"><img class="photo-enlarged" alt="" draggable="false"><span class="photo-loading" role="status">ფოტო იტვირთება…</span></div><button class="photo-next" aria-label="შემდეგი ფოტო">›</button></div><p class="photo-viewer-caption" aria-live="polite"></p><div class="photo-thumbnails" aria-label="გალერეის ფოტოები"></div>`;
 document.body.append(photoViewer);
 let viewerPhotos = [], viewerIndex = 0;
 const enlargedPhoto = photoViewer.querySelector('.photo-enlarged');
 let photoTransitionVersion = 0;
 let photoTransition = null;
+const photoViewport=photoViewer.querySelector('.photo-viewport');
+const photoLoading=photoViewer.querySelector('.photo-loading');
+const photoThumbs=photoViewer.querySelector('.photo-thumbnails');
+const zoomButton=photoViewer.querySelector('.photo-zoom-button');
+const fullscreenButton=photoViewer.querySelector('.photo-fullscreen');
+let zoomed=false,panX=0,panY=0,drag=null;
+function paintPan(){
+ const maxX=Math.max(0,(enlargedPhoto.offsetWidth*2-photoViewport.clientWidth)/2),maxY=Math.max(0,(enlargedPhoto.offsetHeight*2-photoViewport.clientHeight)/2);
+ panX=Math.max(-maxX,Math.min(maxX,panX));panY=Math.max(-maxY,Math.min(maxY,panY));
+ enlargedPhoto.style.transform=zoomed?'translate('+panX+'px,'+panY+'px) scale(2)':'none';
+}
+function resetPhotoZoom(){zoomed=false;panX=panY=0;drag=null;photoViewport.classList.remove('is-zoomed','is-dragging');zoomButton.setAttribute('aria-pressed','false');zoomButton.setAttribute('aria-label','ფოტოს გადიდება');zoomButton.textContent='＋';paintPan();}
+function togglePhotoZoom(){if(!enlargedPhoto.complete||!enlargedPhoto.naturalWidth||photoViewer.classList.contains('is-loading'))return;zoomed=!zoomed;panX=panY=0;photoViewport.classList.toggle('is-zoomed',zoomed);zoomButton.setAttribute('aria-pressed',String(zoomed));zoomButton.setAttribute('aria-label',zoomed?'საწყისი ზომა':'ფოტოს გადიდება');zoomButton.textContent=zoomed?'−':'＋';paintPan();}
+zoomButton.addEventListener('click',togglePhotoZoom);
+enlargedPhoto.addEventListener('dblclick',event=>{event.preventDefault();togglePhotoZoom();});
+photoViewport.addEventListener('pointerdown',event=>{if(!zoomed||event.button!==0)return;drag={id:event.pointerId,x:event.clientX,y:event.clientY,px:panX,py:panY};photoViewport.setPointerCapture(event.pointerId);photoViewport.classList.add('is-dragging');});
+photoViewport.addEventListener('pointermove',event=>{if(!drag||event.pointerId!==drag.id)return;panX=drag.px+event.clientX-drag.x;panY=drag.py+event.clientY-drag.y;paintPan();});
+const stopPan=()=>{drag=null;photoViewport.classList.remove('is-dragging');};
+photoViewport.addEventListener('pointerup',stopPan);photoViewport.addEventListener('pointercancel',stopPan);photoViewport.addEventListener('lostpointercapture',stopPan);
+function syncFullscreen(){const full=document.fullscreenElement===photoViewer||photoViewer.classList.contains('is-expanded');fullscreenButton.setAttribute('aria-pressed',String(full));fullscreenButton.setAttribute('aria-label',full?'სრული ეკრანიდან გამოსვლა':'სრული ეკრანი');paintPan();}
+fullscreenButton.addEventListener('click',async()=>{try{if(document.fullscreenElement===photoViewer)await document.exitFullscreen();else if(photoViewer.classList.contains('is-expanded'))photoViewer.classList.remove('is-expanded');else if(photoViewer.requestFullscreen&&document.fullscreenEnabled)await photoViewer.requestFullscreen();else photoViewer.classList.add('is-expanded');}catch{photoViewer.classList.toggle('is-expanded');}syncFullscreen();});
+document.addEventListener('fullscreenchange',syncFullscreen);window.addEventListener('resize',paintPan);
+function renderPhotoThumbs(){photoThumbs.replaceChildren();viewerPhotos.forEach((photo,i)=>{const button=document.createElement('button');button.type='button';button.className='photo-thumbnail';button.setAttribute('aria-label','ფოტო '+(i+1)+' — '+photo.alt);const image=document.createElement('img');image.src=photo.src;image.alt='';image.loading='lazy';button.append(image);button.addEventListener('click',()=>showViewerPhoto(i));photoThumbs.append(button);});photoThumbs.hidden=viewerPhotos.length<2;}
 async function showViewerPhoto(index) {
-  const version = ++photoTransitionVersion;
-  photoTransition?.cancel();
-  viewerIndex = (index + viewerPhotos.length) % viewerPhotos.length;
-  const photo = viewerPhotos[viewerIndex];
-  const position = viewerIndex;
-  const switching = photoViewer.open && enlargedPhoto.src !== photo.src;
-  if (switching) {
-    // Keep the existing photo visible until the next image is ready.
-    const preload = new Image();
-    preload.src = photo.src;
-    try { await preload.decode(); } catch { return; }
-    if (version !== photoTransitionVersion || !photoViewer.open) return;
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      photoTransition = enlargedPhoto.animate([{opacity:1},{opacity:0}], {duration:150,fill:'forwards',easing:'ease-out'});
-      await photoTransition.finished.catch(() => {});
-      if (version !== photoTransitionVersion || !photoViewer.open) return;
-    }
-  }
-  enlargedPhoto.src = photo.src;
-  enlargedPhoto.alt = photo.alt;
-  photoViewer.querySelector('.photo-viewer-caption').textContent = photo.alt;
-  photoViewer.querySelector('.photo-counter').textContent = `${position + 1} / ${viewerPhotos.length}`;
-  photoViewer.querySelectorAll('.photo-prev,.photo-next').forEach(button => {button.hidden = viewerPhotos.length < 2;});
-  photoTransition?.cancel();
-  if (switching && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    photoTransition = enlargedPhoto.animate([{opacity:0},{opacity:1}], {duration:240,easing:'ease-in-out'});
-  }
+ if(!viewerPhotos.length)return;
+ const version=++photoTransitionVersion;photoTransition?.cancel();resetPhotoZoom();
+ viewerIndex=(index+viewerPhotos.length)%viewerPhotos.length;
+ const photo=viewerPhotos[viewerIndex];
+ photoViewer.classList.add('is-loading');photoLoading.textContent='ფოტო იტვირთება…';photoLoading.hidden=false;
+ photoThumbs.querySelectorAll('button').forEach((button,i)=>{button.setAttribute('aria-pressed',String(i===viewerIndex));if(i===viewerIndex)button.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});});
+ photoViewer.querySelector('.photo-counter').textContent=(viewerIndex+1)+' / '+viewerPhotos.length;
+ photoViewer.querySelectorAll('.photo-prev,.photo-next').forEach(button=>button.hidden=viewerPhotos.length<2);
+ const preload=new Image();preload.src=photo.src;
+ try{await preload.decode();}catch{if(version===photoTransitionVersion){photoViewer.classList.remove('is-loading');photoLoading.textContent='ფოტო ვერ ჩაიტვირთა — სცადე სხვა კადრი';}return;}
+ if(version!==photoTransitionVersion||!photoViewer.open)return;
+ enlargedPhoto.src=photo.src;enlargedPhoto.alt=photo.alt;
+ photoViewer.querySelector('.photo-viewer-caption').textContent=photo.alt;
+ await enlargedPhoto.decode().catch(()=>{});
+ if(version!==photoTransitionVersion||!photoViewer.open)return;
+ photoViewer.classList.remove('is-loading');photoLoading.hidden=true;
+ if(!matchMedia('(prefers-reduced-motion: reduce)').matches)photoTransition=enlargedPhoto.animate([{opacity:0,filter:'blur(3px)'},{opacity:1,filter:'blur(0px)'}],{duration:280,easing:'ease-out'});
 }
 function openPhotoViewer(image) {
-  const origin=image.getBoundingClientRect();
-  viewerPhotos = [...new Map([...(image.closest('.news-card') || document).querySelectorAll(image.closest('.news-card') ? '.photo-zoom-trigger img' : '.real-project-photo img,.project-gallery img')].map(photo => [photo.src, {src: photo.src, alt: photo.alt}])).values()];
-  showViewerPhoto(viewerPhotos.findIndex(photo => photo.src === image.src));
-  photoViewer.showModal();
-  document.body.classList.add('photo-viewer-open');
-  const version=photoTransitionVersion;
-  enlargedPhoto.decode().catch(()=>{}).then(()=>{
-    if(!photoViewer.open || version!==photoTransitionVersion || matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-    const target=enlargedPhoto.getBoundingClientRect();
-    if(!target.width||!target.height)return;
-    photoTransition=enlargedPhoto.animate([
-      {transform:'translate('+(origin.x+origin.width/2-target.x-target.width/2)+'px,'+(origin.y+origin.height/2-target.y-target.height/2)+'px) scale('+origin.width/target.width+','+origin.height/target.height+')',opacity:.55},
-      {transform:'translate(0,0) scale(1)',opacity:1}
-    ],{duration:380,easing:'cubic-bezier(.22,1,.36,1)'});
-  });
+ viewerPhotos=[...new Map([...(image.closest('.news-card')||document).querySelectorAll(image.closest('.news-card')?'.photo-zoom-trigger img':'.real-project-photo img,.project-gallery img')].map(photo=>[photo.src,{src:photo.src,alt:photo.alt}])).values()];
+ renderPhotoThumbs();photoViewer.showModal();document.body.classList.add('photo-viewer-open');showViewerPhoto(viewerPhotos.findIndex(photo=>photo.src===image.src));
 }
+
 document.querySelectorAll('.real-project-photo').forEach(frame => {
   const image = frame.querySelector('img');
   if (!image || frame.closest('a,button')) return;
@@ -78,7 +79,7 @@ document.addEventListener('click', event => {
 const photoStage = photoViewer.querySelector('.photo-viewer-stage');
 let photoTouch = null, suppressPhotoClickUntil = 0;
 photoStage.addEventListener('touchstart', event => {
-  photoTouch = event.touches.length === 1 && !event.target.closest('button') && photoViewer.open && viewerPhotos.length > 1
+  photoTouch = !zoomed && event.touches.length === 1 && !event.target.closest('button') && photoViewer.open && viewerPhotos.length > 1
     ? {x:event.touches[0].clientX,y:event.touches[0].clientY,id:event.touches[0].identifier} : null;
 }, {passive:true});
 photoStage.addEventListener('touchmove', event => {if(event.touches.length !== 1) photoTouch=null;}, {passive:true});
@@ -120,6 +121,9 @@ photoViewer.addEventListener('click', event => {
 });
 photoViewer.addEventListener('close', () => {
   ++photoTransitionVersion;
+  resetPhotoZoom();photoViewer.classList.remove('is-expanded','is-loading');
+  if(document.fullscreenElement===photoViewer)document.exitFullscreen().catch(()=>{});
+  syncFullscreen();
   photoTransition?.cancel();
   document.body.classList.remove('photo-viewer-open');
 });
