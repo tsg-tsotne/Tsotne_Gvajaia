@@ -410,4 +410,4 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 @media(prefers-reduced-motion:reduce){.nav-current-line{transition:none}}
 
 /* Soft neon halo keeps the active underline crisp. */
-.nav-current-line{box-shadow:0 3px 8px #65e9ed66,0 5px 12px #65e9ed40}
+.nav-current-line{box-shadow:0 3px 10px #65e9edaa,0 7px 22px #65e9ed80,0 12px 34px #65e9ed50}
