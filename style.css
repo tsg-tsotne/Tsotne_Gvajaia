@@ -387,3 +387,14 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 .scroll-progress{height:3px;background:var(--cyan)}
 @media(hover:none){.photo-zoom-hint{opacity:1;translate:0 0;width:32px;height:32px}}
 @media(prefers-reduced-motion:reduce){.header .logo-hologram,.photo-zoom-hint,.news-filter-indicator{transition:none}.header .logo-hologram{translate:none!important}}
+
+/* Desktop card depth, retaining each illustration's own animation. */
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+.pointer-tilt:is(.project-card,.club-card,.lesson-card,.related-card){transform:perspective(1000px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg));transition:transform .65s cubic-bezier(.22,1.35,.36,1),box-shadow .45s ease}
+.pointer-tilt.tilt-engaged:is(.project-card,.club-card,.lesson-card,.related-card){transition:transform .16s ease-out,box-shadow .2s ease-out;box-shadow:var(--shadow-x,0px) var(--shadow-y,18px) 32px #0006,0 0 18px #65e9ed12}
+.pointer-tilt :is(.project-body h3,.project-body .text-link,.club-logo,.robo-logo-motion,.lesson-body h3,.related-label){position:relative;transition:translate .55s cubic-bezier(.22,1.35,.36,1),filter .3s}
+.pointer-tilt.tilt-engaged :is(.project-body h3,.lesson-body h3){translate:0 -4px;filter:drop-shadow(0 5px 5px #0005)}
+.pointer-tilt.tilt-engaged :is(.project-body .text-link,.related-label){translate:0 -2px}
+.pointer-tilt.tilt-engaged :is(.club-logo,.robo-logo-motion){translate:0 -6px;filter:drop-shadow(0 8px 7px #0005)}
+}
+@media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.pointer-tilt:is(.project-card,.club-card,.lesson-card,.related-card){transform:none}.pointer-tilt :is(.project-body h3,.project-body .text-link,.club-logo,.robo-logo-motion,.lesson-body h3,.related-label){translate:none}}

@@ -609,19 +609,20 @@ document.querySelectorAll('img.club-logo, img.club-page-logo').forEach((logo,ind
   svg.append(circuits);
   logo.replaceWith(wrapper);wrapper.append(svg);
 });
-// Small bounded card tilt, with native touch scrolling left untouched.
+// Bounded depth on desktop cards; touch and reduced-motion stay static.
 (() => {
-  const preference=matchMedia('(prefers-reduced-motion: reduce)');
-  document.querySelectorAll('.project-card').forEach(card=>{
-    card.classList.add('pointer-tilt');let frame=0,x=0,y=0;
-    const reset=()=>{cancelAnimationFrame(frame);frame=0;card.style.removeProperty('--tilt-x');card.style.removeProperty('--tilt-y');};
-    card.addEventListener('pointermove',event=>{
-      if(event.pointerType!=='mouse'||preference.matches)return;
-      const r=card.getBoundingClientRect();x=Math.max(-1,Math.min(1,(event.clientX-r.left)/r.width*2-1));y=Math.max(-1,Math.min(1,(event.clientY-r.top)/r.height*2-1));
-      if(!frame)frame=requestAnimationFrame(()=>{card.style.setProperty('--tilt-x',(-y*2.5)+'deg');card.style.setProperty('--tilt-y',(x*2.5)+'deg');frame=0;});
-    },{passive:true});
-    card.addEventListener('pointerleave',reset);card.addEventListener('pointercancel',reset);preference.addEventListener('change',reset);window.addEventListener('blur',reset);
-  });
+ const preference=matchMedia('(prefers-reduced-motion: reduce)');
+ const fine=matchMedia('(hover:hover) and (pointer:fine)');
+ document.querySelectorAll('.project-card,.club-card,.lesson-card,.related-card').forEach(card=>{
+  card.classList.add('pointer-tilt');let frame=0,x=0,y=0;
+  const reset=()=>{cancelAnimationFrame(frame);frame=0;card.classList.remove('tilt-engaged');['--tilt-x','--tilt-y','--shadow-x','--shadow-y'].forEach(p=>card.style.removeProperty(p));};
+  card.addEventListener('pointermove',event=>{
+   if(event.pointerType!=='mouse'||preference.matches||!fine.matches)return;
+   const r=card.getBoundingClientRect();x=Math.max(-1,Math.min(1,(event.clientX-r.left)/r.width*2-1));y=Math.max(-1,Math.min(1,(event.clientY-r.top)/r.height*2-1));
+   if(!frame)frame=requestAnimationFrame(()=>{card.classList.add('tilt-engaged');card.style.setProperty('--tilt-x',(-y*5.5)+'deg');card.style.setProperty('--tilt-y',(x*5.5)+'deg');card.style.setProperty('--shadow-x',(-x*15)+'px');card.style.setProperty('--shadow-y',(18-y*10)+'px');frame=0;});
+  },{passive:true});
+  card.addEventListener('pointerleave',reset);card.addEventListener('pointercancel',reset);preference.addEventListener('change',reset);fine.addEventListener('change',reset);window.addEventListener('blur',reset);
+ });
 })();
 // One greeting per page visit when the robot becomes visible.
 (() => {
