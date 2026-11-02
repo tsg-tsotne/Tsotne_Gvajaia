@@ -664,3 +664,14 @@ document.querySelectorAll('img.club-logo, img.club-page-logo').forEach((logo,ind
     new ResizeObserver(update).observe(bar);document.fonts.ready.then(update);update();
   });
 })();
+
+// A single active-section line travels between navigation items.
+(() => {
+ const nav=document.querySelector('#navigation');if(!nav)return;
+ const line=document.createElement('span');line.className='nav-current-line';line.setAttribute('aria-hidden','true');nav.append(line);nav.classList.add('has-current-line');
+ [...nav.querySelectorAll('a,button')].forEach((item,i)=>item.style.setProperty('--menu-order',i));
+ let frame=0;
+ const update=()=>{frame=0;const active=nav.querySelector('a.nav-active,a[aria-current="page"],a[aria-current="location"]');if(!active||!nav.getClientRects().length){line.style.opacity='0';return;}line.style.transform=`translate(${active.offsetLeft+(active.offsetWidth-22)/2}px,${active.offsetTop+active.offsetHeight-5}px)`;line.style.opacity='1';};
+ const schedule=()=>{if(!frame)frame=requestAnimationFrame(update);};
+ new MutationObserver(schedule).observe(nav,{subtree:true,attributes:true,attributeFilter:['class','aria-current']});new ResizeObserver(schedule).observe(nav);document.fonts.ready.then(schedule);window.addEventListener('resize',schedule);schedule();
+})();

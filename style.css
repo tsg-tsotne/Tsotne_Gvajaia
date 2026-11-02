@@ -398,3 +398,10 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 .pointer-tilt.tilt-engaged :is(.club-logo,.robo-logo-motion){translate:0 -6px;filter:drop-shadow(0 8px 7px #0005)}
 }
 @media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.pointer-tilt:is(.project-card,.club-card,.lesson-card,.related-card){transform:none}.pointer-tilt :is(.project-body h3,.project-body .text-link,.club-logo,.robo-logo-motion,.lesson-body h3,.related-label){translate:none}}
+/* One sliding current-section marker and a staggered mobile menu. */
+@media(min-width:761px){#navigation{position:relative}}
+#navigation.has-current-line a::after{display:none}
+.nav-current-line{position:absolute;top:0;left:0;width:22px;height:2px;border-radius:2px;background:var(--cyan);box-shadow:0 0 8px #65e9ed55;pointer-events:none;opacity:0;transition:transform .32s cubic-bezier(.22,1,.36,1),opacity .2s}
+@keyframes mobile-nav-enter{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
+@media(max-width:760px) and (prefers-reduced-motion:no-preference){#navigation.open>a,#navigation.open>button{animation:mobile-nav-enter .28s ease-out both;animation-delay:calc(var(--menu-order,0)*45ms)}}
+@media(prefers-reduced-motion:reduce){.nav-current-line{transition:none}}
