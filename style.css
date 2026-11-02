@@ -365,3 +365,12 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 .club-card.stem:is(:hover,:focus-within) .steam-math,.steam-logo-motion:is(:hover,:focus-visible) .steam-math{animation:steam-math-turn 4s ease-in-out infinite}
 @keyframes steam-math-turn{0%,10%{transform:rotate(0);filter:brightness(1)}35%,50%{transform:rotate(90deg);filter:brightness(1.25) drop-shadow(0 0 6px #65e9ed)}75%,85%{transform:rotate(-90deg);filter:brightness(1.1)}100%{transform:rotate(0);filter:brightness(1)}}
 @media(prefers-reduced-motion:reduce){.steam-logo-motion .steam-chip-wire,.steam-logo-motion .steam-chip-outline{animation:none!important;stroke-dashoffset:0;opacity:1}.steam-logo-motion .steam-chip-core{animation:none!important;transform:none;opacity:1}}
+
+/* Shared navigation: soft glow, subtle lift and current-section underline. */
+#navigation :is(a,a.nav-contact,button.nav-search){position:relative;border-color:transparent;background:transparent;box-shadow:none;transform:none;transition:color .2s ease,text-shadow .2s ease,transform .2s ease}
+#navigation a::after{content:'';position:absolute;left:50%;bottom:3px;width:22px;height:2px;border-radius:2px;background:var(--cyan);opacity:0;transform:translateX(-50%) scaleX(.5);transition:opacity .2s ease,transform .2s ease;pointer-events:none}
+#navigation a:is(.nav-active,[aria-current="page"],[aria-current="location"]){color:var(--cyan);background:transparent;box-shadow:none;text-shadow:0 0 12px #65e9ed40}
+#navigation a:is(.nav-active,[aria-current="page"],[aria-current="location"])::after{opacity:1;transform:translateX(-50%) scaleX(1)}
+#navigation :is(a,a.nav-contact,button.nav-search):focus-visible{color:var(--cyan);text-shadow:0 0 12px #65e9ed80;background:transparent;box-shadow:none}
+@media(hover:hover) and (pointer:fine){#navigation :is(a,a.nav-contact,button.nav-search):hover{color:var(--cyan);text-shadow:0 0 12px #65e9ed80;transform:translateY(-2px);background:transparent;box-shadow:none;border-color:transparent}}
+@media(prefers-reduced-motion:reduce){#navigation :is(a,a.nav-contact,button.nav-search),#navigation a::after{transition:none}#navigation :is(a,a.nav-contact,button.nav-search):hover{transform:none}}

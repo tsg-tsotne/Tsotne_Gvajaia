@@ -124,21 +124,6 @@ photoViewer.addEventListener('close', () => {
   document.body.classList.remove('photo-viewer-open');
 });
 const navigation = document.querySelector('#navigation');
-// A normalized SVG path traces each link's rounded outline at any width.
-navigation.querySelectorAll('a').forEach(link => {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.classList.add('nav-outline');
-  svg.setAttribute('aria-hidden', 'true');
-  svg.setAttribute('focusable', 'false');
-  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-  rect.setAttribute('x', '1'); rect.setAttribute('y', '1');
-  rect.setAttribute('rx', '8'); rect.setAttribute('pathLength', '100');
-  svg.append(rect); link.append(svg);
-  new ResizeObserver(() => {
-    rect.setAttribute('width', Math.max(0, link.clientWidth - 2));
-    rect.setAttribute('height', Math.max(0, link.clientHeight - 2));
-  }).observe(link);
-});
 menuButton.addEventListener('click', () => {
   const open = menuButton.getAttribute('aria-expanded') !== 'true';
   menuButton.setAttribute('aria-expanded', String(open));
