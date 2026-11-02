@@ -416,3 +416,44 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 .logo-signal{position:absolute;inset:0;border:1px solid #65e9ed80;border-radius:50%;box-shadow:0 0 10px #65e9ed35,inset 0 0 8px #65e9ed15;pointer-events:none;z-index:-1;opacity:0;animation:logo-signal-wave 18s ease-out 4s infinite}
 @keyframes logo-signal-wave{0%{opacity:0;transform:scale(.75)}2%{opacity:.45}10%,100%{opacity:0;transform:scale(1.8)}}
 @media(prefers-reduced-motion:reduce){.logo-signal{display:none;animation:none}}
+/* Theme switch and light palette. Dark remains the original default. */
+.theme-toggle{display:grid;place-items:center;width:36px;height:36px;flex-shrink:0;padding:7px;border-radius:9px;color:var(--cyan);transition:color .2s,background .2s,transform .2s}
+.theme-toggle svg{width:21px;height:21px;pointer-events:none}
+.theme-toggle:hover{background:#65e9ed12;transform:translateY(-2px)}
+body,.header,.club-card,.project-card,.lesson-card,.news-card,.contact,dialog{transition:background-color .25s,color .25s,border-color .25s}
+html[data-theme="light"]{color-scheme:light;--bg:#f4f7fc;--panel:#fff;--text:#15253c;--muted:#52637a;--line:#17335420;--cyan:#007c88;--violet:#6950b8;--button-glow:#007c88}
+html[data-theme="light"] .header{background:#f4f7fcf2;border-color:var(--line)}
+html[data-theme="light"] :is(nav a,.text-link,.hero-role,.about-copy .lead,.lesson-youtube,.footer-socials a){color:#344b66}
+html[data-theme="light"] :is(h1>span,.muted){color:#4c6280}
+html[data-theme="light"] :is(.school,.coordinate,.project-meta,.visual-index,.visual-label){color:#52637a}
+html[data-theme="light"] .gradient-text{background:linear-gradient(110deg,#007c88,#6950b8);background-clip:text;-webkit-background-clip:text;color:transparent}
+html[data-theme="light"] :is(.project-card,.lesson-card,.news-card,.project-gallery figure,.media-source,.contact,.floating-tag,.share-notice){background:#fff;border-color:#193a5e24;box-shadow:0 8px 24px #193a5e0a}
+html[data-theme="light"] .club-card{background:radial-gradient(ellipse at top right,#d7f1f3,transparent 70%),#fff;border-color:#007c8830}
+html[data-theme="light"] .club-card.stem{background:radial-gradient(ellipse at top right,#e9e3fa,transparent 70%),#fff;border-color:#6950b830}
+html[data-theme="light"] .related-card{background:linear-gradient(135deg,#e9f3f8,#fff);border-color:var(--line)}
+html[data-theme="light"] :is(.topic-strip,.chips span){background:#eaf0f7;color:#445b73;border-color:var(--line)}
+html[data-theme="light"] :is(.filters button,.lesson-filters button,.secondary){border-color:#17335430}
+html[data-theme="light"] .primary{background:#007c88;color:white}
+html[data-theme="light"] .primary:hover{background:#006b77;color:white}
+html[data-theme="light"] .secondary{background:#fff;color:#23435b}
+html[data-theme="light"] :is(.clubs .club-top .pill,.clubs .stem .club-top .pill){color:#006b77;background:#e7f5f5;border-color:#007c8850}
+html[data-theme="light"] .clubs .stem .club-top .pill{color:#6043a3;background:#eee9fa;border-color:#6950b850}
+html[data-theme="light"] .project-meta .status-working{color:#6043a3!important;background:#eee9fa;border-color:#6950b830}
+html[data-theme="light"] .project-meta span:last-child{color:#6043a3}
+html[data-theme="light"] :is(dialog,dialog.photo-viewer){background:#f7f9fe;color:var(--text);border-color:#193a5e30}
+html[data-theme="light"] :is(dialog p,.photo-viewer .photo-viewer-caption){color:var(--muted)}
+html[data-theme="light"] :is(.project-search input,.search-result,.photo-close,.photo-prev,.photo-next,.back-to-top){background:#fff;border-color:#007c8840;color:var(--text)}
+html[data-theme="light"] .search-result:hover{background:#e9f5f6}
+html[data-theme="light"] :is(.project-gallery a,.traffic-intro .real-project-photo,.news-gallery button){background:#e5ebf3}
+/* Keep illustration stages dark so their original artwork and neon detail stay intact. */
+html[data-theme="light"] :is(.animated-project,.egg-visual,.bell-visual,.plane-visual,.ai-visual,.traffic-visual,.portrait-frame,.gallery-slot){--cyan:#65e9ed;--violet:#a191ff;color:#eff3fc}
+html[data-theme="light"] .gallery-slot>span:last-child{color:#b1bfd2}
+html[data-theme="light"] .photo-zoom-hint{background:#fffffff0;color:#007c88;border-color:#007c8870}
+html[data-theme="light"] .lesson-play-icon{color:#65e9ed}
+html[data-theme="light"] .nav-current-line{box-shadow:0 3px 8px #007c8840,0 7px 18px #007c8825}
+html[data-theme="light"] #navigation a:is(.nav-active,[aria-current="page"],[aria-current="location"]){color:var(--cyan);text-shadow:0 0 10px #007c8825}
+html[data-theme="light"] .news-filter-indicator{background:#007c8810;border-color:#007c8850;box-shadow:0 0 12px #007c8815}
+@media(max-width:760px){html[data-theme="light"] #navigation{background:#f4f7fc;border-color:var(--line)}}
+@media(min-width:761px) and (max-width:1300px){#navigation{gap:10px}.header{padding-inline:24px}.header .brand{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.theme-toggle,body,.header,.club-card,.project-card,.lesson-card,.news-card,.contact,dialog{transition:none}.theme-toggle:hover{transform:none}}
+

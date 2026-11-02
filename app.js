@@ -703,3 +703,14 @@ document.querySelectorAll('img.club-logo, img.club-page-logo').forEach((logo,ind
 document.querySelectorAll('.header .logo-hologram').forEach(logo=>{
  const signal=document.createElement('span');signal.className='logo-signal';signal.setAttribute('aria-hidden','true');logo.prepend(signal);
 });
+
+// Theme preference is explicit: dark by default, remembered after a choice.
+(() => {
+ const nav=document.querySelector('#navigation');if(!nav)return;
+ const button=document.createElement('button');button.type='button';button.className='theme-toggle';button.style.setProperty('--menu-order',nav.querySelectorAll('a,button').length);nav.append(button);
+ const sun='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M5 19l1.4-1.4M17.6 6.4 19 5"/></svg>';
+ const moon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"/></svg>';
+ const sync=()=>{const light=document.documentElement.dataset.theme==='light';button.innerHTML=light?moon:sun;button.setAttribute('aria-label',light?'მუქ თემაზე გადართვა':'ღია თემაზე გადართვა');button.title=button.getAttribute('aria-label');document.querySelector('meta[name="theme-color"]')?.setAttribute('content',light?'#f4f7fc':'#080c16');};
+ button.addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='light'?'dark':'light';try{localStorage.setItem('club-theme',document.documentElement.dataset.theme);}catch{}sync();});
+ window.addEventListener('storage',event=>{if(event.key==='club-theme'){document.documentElement.dataset.theme=event.newValue==='light'?'light':'dark';sync();}});sync();
+})();
