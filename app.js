@@ -638,3 +638,28 @@ document.querySelectorAll('img.club-logo, img.club-page-logo').forEach((logo,ind
   },{threshold:.65});
   observer.observe(robot);preference.addEventListener('change',()=>{if(preference.matches)animations.forEach(a=>a.cancel());});
 })();
+
+// Small pointer attraction on the header logo; transforms inside remain independent.
+(() => {
+  const motion=matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll('.header .brand').forEach(brand=>{
+    const logo=brand.querySelector('.logo-hologram');if(!logo)return;
+    const reset=()=>{logo.style.translate='0px 0px';};
+    brand.addEventListener('pointermove',e=>{
+      if(e.pointerType==='touch'||motion.matches)return;
+      const r=brand.getBoundingClientRect();
+      logo.style.translate=`${Math.max(-5,Math.min(5,(e.clientX-r.left-r.width/2)*.04))}px ${Math.max(-4,Math.min(4,(e.clientY-r.top-r.height/2)*.12))}px`;
+    });
+    brand.addEventListener('pointerleave',reset);brand.addEventListener('pointercancel',reset);motion.addEventListener('change',reset);
+  });
+  document.querySelectorAll('.photo-zoom-trigger,.project-gallery a').forEach(trigger=>{
+    const hint=document.createElement('span');hint.className='photo-zoom-hint';hint.setAttribute('aria-hidden','true');
+    hint.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M7 10h6M10 7v6"/></svg>';trigger.append(hint);
+  });
+  document.querySelectorAll('.news-filters').forEach(bar=>{
+    const indicator=document.createElement('span');indicator.className='news-filter-indicator';indicator.setAttribute('aria-hidden','true');bar.prepend(indicator);
+    const update=()=>{const active=bar.querySelector('[data-news-filter].active');if(!active)return;indicator.style.width=active.offsetWidth+'px';indicator.style.height=active.offsetHeight+'px';indicator.style.transform=`translate(${active.offsetLeft}px,${active.offsetTop}px)`;};
+    new MutationObserver(update).observe(bar,{subtree:true,attributes:true,attributeFilter:['class']});
+    new ResizeObserver(update).observe(bar);document.fonts.ready.then(update);update();
+  });
+})();

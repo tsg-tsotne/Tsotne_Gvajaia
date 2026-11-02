@@ -374,3 +374,16 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 #navigation :is(a,a.nav-contact,button.nav-search):focus-visible{color:var(--cyan);text-shadow:0 0 12px #65e9ed80;background:transparent;box-shadow:none}
 @media(hover:hover) and (pointer:fine){#navigation :is(a,a.nav-contact,button.nav-search):hover{color:var(--cyan);text-shadow:0 0 12px #65e9ed80;transform:translateY(-2px);background:transparent;box-shadow:none;border-color:transparent}}
 @media(prefers-reduced-motion:reduce){#navigation :is(a,a.nav-contact,button.nav-search),#navigation a::after{transition:none}#navigation :is(a,a.nav-contact,button.nav-search):hover{transform:none}}
+/* Subtle interactive details, shared across all pages. */
+.header .logo-hologram{transition:translate .22s ease-out}
+.photo-zoom-trigger,.project-gallery a{position:relative}
+.photo-zoom-hint{position:absolute;right:14px;bottom:14px;z-index:5;width:38px;height:38px;display:grid;place-items:center;color:var(--cyan);background:#080c16d9;border:1px solid #65e9ed70;border-radius:50%;box-shadow:0 0 14px #65e9ed25;opacity:0;translate:0 5px;transition:opacity .2s,translate .2s;pointer-events:none}
+.photo-zoom-hint svg{width:21px;height:21px}
+:is(.photo-zoom-trigger,.project-gallery a):is(:hover,:focus-visible) .photo-zoom-hint{opacity:1;translate:0 0}
+.news-filters{position:relative;isolation:isolate}
+.news-filter-indicator{position:absolute;left:0;top:0;z-index:-1;border:1px solid #65e9ed70;border-radius:25px;background:#65e9ed14;box-shadow:0 0 16px #65e9ed20;pointer-events:none;transition:transform .3s ease,width .3s ease,height .3s ease}
+.news-filters button.active{background:transparent;border-color:transparent}
+.news-filters button:is(:hover,:focus-visible){transform:none}
+.scroll-progress{height:3px;background:var(--cyan)}
+@media(hover:none){.photo-zoom-hint{opacity:1;translate:0 0;width:32px;height:32px}}
+@media(prefers-reduced-motion:reduce){.header .logo-hologram,.photo-zoom-hint,.news-filter-indicator{transition:none}.header .logo-hologram{translate:none!important}}
