@@ -411,3 +411,5 @@ footer{flex-wrap:wrap}.footer-copyright{flex-basis:100%;text-align:center;border
 
 /* Soft neon halo keeps the active underline crisp. */
 .nav-current-line{box-shadow:0 3px 10px #65e9edaa,0 7px 22px #65e9ed80,0 12px 34px #65e9ed50}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){.button.magnetic-button{translate:var(--magnet-x,0px) var(--magnet-y,0px);transition:translate .24s cubic-bezier(.22,1,.36,1),transform .3s,box-shadow .35s,background .3s,border-color .3s,color .3s}}
+@media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.button.magnetic-button{translate:none}}

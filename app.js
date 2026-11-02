@@ -675,3 +675,26 @@ document.querySelectorAll('img.club-logo, img.club-page-logo').forEach((logo,ind
  const schedule=()=>{if(!frame)frame=requestAnimationFrame(update);};
  new MutationObserver(schedule).observe(nav,{subtree:true,attributes:true,attributeFilter:['class','aria-current']});new ResizeObserver(schedule).observe(nav);document.fonts.ready.then(schedule);window.addEventListener('resize',schedule);schedule();
 })();
+
+// Gentle attraction on main calls to action, without moving their layout boxes.
+(() => {
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)'),fine=matchMedia('(hover:hover) and (pointer:fine)');
+ const buttons=[...document.querySelectorAll('.button.primary,.button.secondary')];
+ let frame=0;
+ const reset=()=>buttons.forEach(b=>{b.style.removeProperty('--magnet-x');b.style.removeProperty('--magnet-y');});
+ buttons.forEach(b=>b.classList.add('magnetic-button'));
+ document.addEventListener('pointermove',e=>{
+  if(e.pointerType!=='mouse'||reduced.matches||!fine.matches)return;
+  cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{
+   buttons.forEach(b=>{
+    const r=b.getBoundingClientRect(),sx=parseFloat(b.style.getPropertyValue('--magnet-x'))||0,sy=parseFloat(b.style.getPropertyValue('--magnet-y'))||0;
+    const x=e.clientX-(r.left-sx+r.width/2),y=e.clientY-(r.top-sy+r.height/2);
+    const nearby=b.getClientRects().length&&Math.abs(x)<r.width/2+18&&Math.abs(y)<r.height/2+18;
+    b.style.setProperty('--magnet-x',(nearby?Math.max(-5,Math.min(5,x*.07)):0)+'px');
+    b.style.setProperty('--magnet-y',(nearby?Math.max(-4,Math.min(4,y*.1)):0)+'px');
+   });frame=0;
+  });
+ },{passive:true});
+ const stop=()=>{cancelAnimationFrame(frame);frame=0;reset();};
+ document.documentElement.addEventListener('pointerleave',stop);document.addEventListener('pointercancel',stop);window.addEventListener('blur',stop);window.addEventListener('scroll',stop,{passive:true});reduced.addEventListener('change',stop);fine.addEventListener('change',stop);
+})();
