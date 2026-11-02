@@ -456,15 +456,19 @@ document.querySelectorAll('.project-meta > span').forEach(status => {
       const kind=document.createElement('small');kind.className='search-kind';kind.textContent=item.kind;result.append(kind,title,description);results.append(result);
     });
   }
+  let searchEntrance=null;
   trigger.addEventListener('click',async()=>{
+    const origin=trigger.getBoundingClientRect();
     nav.classList.remove('open');menuButton.setAttribute('aria-expanded','false');modal.showModal();document.body.classList.add('search-open');input.focus();status.textContent='შედეგები იტვირთება…';
+    searchEntrance?.cancel();
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches){const target=modal.getBoundingClientRect();searchEntrance=modal.animate([{opacity:0,transform:'translate('+(origin.x+origin.width/2-target.x-target.width/2)+'px,'+(origin.y+origin.height/2-target.y-target.height/2)+'px) scale(.08)'},{opacity:1,transform:'translate(0,0) scale(1)'}],{duration:420,easing:'cubic-bezier(.22,1,.36,1)'});}
     try{await load();render()}catch{status.textContent='შედეგების ჩატვირთვა ვერ მოხერხდა. დახურე ძიება და სცადე ხელახლა.'}
   });
   input.addEventListener('input',render);
   input.addEventListener('keydown',event=>{if(event.key==='ArrowDown'){event.preventDefault();results.firstElementChild?.focus()}if(event.key==='Enter'&&results.childElementCount===1){event.preventDefault();results.firstElementChild.click()}});
   modal.querySelector('.search-close').addEventListener('click',()=>modal.close());
   modal.addEventListener('click',event=>{if(event.target!==modal)return;const r=modal.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)modal.close()});
-  modal.addEventListener('close',()=>{document.body.classList.remove('search-open');trigger.focus({preventScroll:true})});
+  modal.addEventListener('close',()=>{searchEntrance?.cancel();document.body.classList.remove('search-open');trigger.focus({preventScroll:true})});
 })();
 
 // Share direct project pages and deep links to project stories.
@@ -729,3 +733,19 @@ document.querySelectorAll('.header .logo-hologram').forEach(logo=>{
  });
  window.addEventListener('storage',event=>{if(event.key==='club-theme'){document.documentElement.dataset.theme=event.newValue==='light'?'light':'dark';sync();}});sync();
 })();
+
+// Individually colored STEAM symbol halos.
+document.querySelectorAll('.steam-logo-motion').forEach(wrapper=>{
+ const svg=wrapper.querySelector('svg');if(!svg)return;svg.removeAttribute('aria-hidden');svg.setAttribute('role','group');svg.setAttribute('aria-label','STEAM მიმართულებები');wrapper.removeAttribute('tabindex');svg.querySelectorAll('image').forEach(image=>image.setAttribute('aria-hidden','true'));const ns='http://www.w3.org/2000/svg';
+ const parts=[[134,410,'#389cff','მეცნიერება'],[277,211,'#27cdda','ტექნოლოგია'],[508,135,'#ffad32','ინჟინერია'],[735,221,'#b374ff','ხელოვნება'],[872,416,'#83ce45','მათემატიკა']];
+ parts.forEach(([x,y,color,label])=>{
+  const halo=document.createElementNS(ns,'circle');halo.setAttribute('cx',x);halo.setAttribute('cy',y);halo.setAttribute('r','119');halo.setAttribute('fill',color);halo.classList.add('steam-symbol-halo');svg.insertBefore(halo,svg.querySelector('image'));
+  const hit=document.createElementNS(ns,'circle');hit.setAttribute('cx',x);hit.setAttribute('cy',y);hit.setAttribute('r','108');hit.setAttribute('fill','transparent');hit.setAttribute('tabindex','0');hit.setAttribute('role','img');hit.setAttribute('aria-label',label);hit.classList.add('steam-symbol-hit');svg.append(hit);
+  const show=()=>halo.classList.add('is-lit'),hide=()=>halo.classList.remove('is-lit');hit.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')show();});hit.addEventListener('pointerleave',hide);hit.addEventListener('focus',show);hit.addEventListener('blur',hide);
+ });
+});
+// Decorative circuit draws once on each hover, leaving links unobstructed.
+document.querySelectorAll('.project-card').forEach(card=>{
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('card-circuit');svg.setAttribute('viewBox','0 0 180 100');svg.setAttribute('aria-hidden','true');
+ svg.innerHTML='<g fill="none" stroke="currentColor" stroke-width="1.4"><path pathLength="100" d="M8 20H42L58 36H78M12 78H43L58 62H78M172 22H140L123 38H102M170 80H138L120 64H102"/><rect pathLength="100" x="78" y="36" width="25" height="30" rx="4"/><circle cx="8" cy="20" r="3"/><circle cx="12" cy="78" r="3"/><circle cx="172" cy="22" r="3"/><circle cx="170" cy="80" r="3"/></g>';card.append(svg);
+});

@@ -486,3 +486,18 @@ dialog.photo-viewer:fullscreen,dialog.photo-viewer.is-expanded{width:100vw;max-w
 dialog.photo-viewer:fullscreen .photo-viewport,dialog.photo-viewer.is-expanded .photo-viewport{height:calc(100dvh - 200px)}
 @media(max-width:760px){.photo-tools{gap:6px}.photo-viewport{height:calc(88dvh - 260px);min-height:130px}.photo-thumbnail{flex-basis:60px;height:48px}.photo-viewer-stage{gap:0}.photo-viewer .photo-tools button{width:36px;height:36px}.photo-viewer:fullscreen .photo-viewport,.photo-viewer.is-expanded .photo-viewport{height:calc(100dvh - 245px)}}
 @media(prefers-reduced-motion:reduce){.photo-loading{animation:none}.photo-thumbnail,.photo-viewer-stage .photo-enlarged{transition:none}}
+/* Symbol-specific ambient color and decorative circuit tracing. */
+.steam-logo-motion{position:relative;z-index:3}
+.steam-logo-motion>svg{overflow:visible}
+.steam-symbol-halo{opacity:0;filter:blur(24px);transition:opacity .35s;pointer-events:none}
+.steam-symbol-halo.is-lit{opacity:.65}
+.steam-symbol-hit{pointer-events:all;outline:none}
+.steam-symbol-hit:focus-visible{stroke:var(--cyan);stroke-width:3;stroke-dasharray:8 8}
+.card-circuit{position:absolute;right:12px;bottom:62px;width:125px;height:70px;color:var(--cyan);opacity:0;pointer-events:none;z-index:2;filter:drop-shadow(0 0 4px #65e9ed50);transition:opacity .3s}
+.card-circuit path,.card-circuit rect{stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset .9s ease}
+.project-card:is(:hover,:focus-within) .card-circuit{opacity:.28}
+.project-card:is(:hover,:focus-within) .card-circuit path,.project-card:is(:hover,:focus-within) .card-circuit rect{stroke-dashoffset:0}
+.project-search::backdrop{background:#020813a8;backdrop-filter:blur(12px)}
+html[data-theme="light"] .project-search::backdrop{background:#172b4866}
+@media(hover:none){.card-circuit{display:none}}
+@media(prefers-reduced-motion:reduce){.steam-symbol-halo,.card-circuit,.card-circuit path,.card-circuit rect{transition:none}}
