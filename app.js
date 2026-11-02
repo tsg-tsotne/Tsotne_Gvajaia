@@ -671,7 +671,7 @@ document.querySelectorAll('img.club-logo, img.club-page-logo').forEach((logo,ind
  const line=document.createElement('span');line.className='nav-current-line';line.setAttribute('aria-hidden','true');nav.append(line);nav.classList.add('has-current-line');
  [...nav.querySelectorAll('a,button')].forEach((item,i)=>item.style.setProperty('--menu-order',i));
  let frame=0;
- const update=()=>{frame=0;const active=nav.querySelector('a.nav-active,a[aria-current="page"],a[aria-current="location"]');if(!active||!nav.getClientRects().length){line.style.opacity='0';return;}line.style.transform=`translate(${active.offsetLeft+(active.offsetWidth-22)/2}px,${active.offsetTop+active.offsetHeight-5}px)`;line.style.opacity='1';};
+ const update=()=>{frame=0;const active=nav.querySelector('a.nav-active,a[aria-current="page"],a[aria-current="location"]');if(!active||!nav.getClientRects().length){line.style.opacity='0';return;}const range=document.createRange();const text=[...active.childNodes].find(node=>node.nodeType===Node.TEXT_NODE&&node.textContent.trim());let width=active.clientWidth-20,offset=(active.offsetWidth-width)/2;if(text){range.selectNodeContents(text);const box=range.getBoundingClientRect(),parent=active.getBoundingClientRect();width=box.width;offset=box.left-parent.left;}line.style.width=width+'px';line.style.transform=`translate(${active.offsetLeft+offset}px,${active.offsetTop+active.offsetHeight-5}px)`;line.style.opacity='1';};
  const schedule=()=>{if(!frame)frame=requestAnimationFrame(update);};
  new MutationObserver(schedule).observe(nav,{subtree:true,attributes:true,attributeFilter:['class','aria-current']});new ResizeObserver(schedule).observe(nav);document.fonts.ready.then(schedule);window.addEventListener('resize',schedule);schedule();
 })();
