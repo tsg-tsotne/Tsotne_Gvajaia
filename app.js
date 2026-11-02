@@ -749,3 +749,24 @@ document.querySelectorAll('.project-card').forEach(card=>{
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('card-circuit');svg.setAttribute('viewBox','0 0 180 100');svg.setAttribute('aria-hidden','true');
  svg.innerHTML='<g fill="none" stroke="currentColor" stroke-width="1.4"><path pathLength="100" d="M8 20H42L58 36H78M12 78H43L58 62H78M172 22H140L123 38H102M170 80H138L120 64H102"/><rect pathLength="100" x="78" y="36" width="25" height="30" rx="4"/><circle cx="8" cy="20" r="3"/><circle cx="12" cy="78" r="3"/><circle cx="172" cy="22" r="3"/><circle cx="170" cy="80" r="3"/></g>';card.append(svg);
 });
+
+// Hidden greeting: four logo clicks within three seconds; ordinary navigation stays intact.
+(() => {
+ const brand=document.querySelector('.header .brand');if(!brand)return;
+ let memory={count:0,time:0},cooldown=0,timer=0;
+ const greeting=document.createElement('aside');greeting.className='robot-greeting';greeting.hidden=true;greeting.setAttribute('aria-label','რობოტის მისალმება');
+ greeting.innerHTML='<button class="robot-greeting-close" type="button" aria-label="მისალმების დახურვა">×</button><svg class="greeting-robot" viewBox="0 0 110 110" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M50 24V14"/><circle class="greeting-antenna" cx="50" cy="10" r="4" fill="currentColor"/><rect x="20" y="26" width="60" height="48" rx="15"/><path d="M14 42v16M86 42v16M32 80h36v19H32zM25 100h18M58 100h18"/><g class="greeting-eyes"><path d="M34 44v6M65 44v6"/></g><path d="M39 59q11 12 22 0"/><g class="greeting-hand"><path d="M74 84l20-15V54M88 57l6 6 6-6"/></g></g></svg><div><strong>გამარჯობა, გამომგონებელო!</strong><p role="status" aria-live="polite"></p></div>';
+ document.body.append(greeting);
+ const close=()=>{clearTimeout(timer);greeting.hidden=true;greeting.querySelector('[role="status"]').textContent='';};
+ greeting.querySelector('button').addEventListener('click',close);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!greeting.hidden)close();});
+ brand.addEventListener('click',event=>{
+  if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||event.button>0)return;
+  if(event.detail!==0&&!event.target.closest('.logo-hologram'))return;
+  const now=Date.now();if(now<cooldown)return;
+  try{memory=JSON.parse(sessionStorage.getItem('club-logo-taps')||'null')||memory;}catch{}
+  memory={count:now-memory.time<3000?memory.count+1:1,time:now};
+  if(memory.count>=4){event.preventDefault();memory.count=0;cooldown=now+10000;greeting.hidden=false;greeting.querySelector('[role="status"]').textContent='საიდუმლო იპოვე! მზად ხარ ახალი იდეებისთვის?';clearTimeout(timer);timer=setTimeout(close,6500);}
+  try{sessionStorage.setItem('club-logo-taps',JSON.stringify(memory));}catch{}
+ });
+})();
