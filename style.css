@@ -525,3 +525,22 @@ html[data-theme="light"] .project-search::backdrop{background:#172b4866}
 @keyframes steam-discovery-orbit{from{transform:rotate(0deg) scale(.5)}to{transform:rotate(75deg) scale(1.1)}}
 @keyframes steam-discovery-life{0%{opacity:0}8%,82%{opacity:1}100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.steam-discovery,.steam-discovery-orbit,.steam-discovery-symbol{animation:none}.steam-discovery-symbol{transform:translate(var(--dx),var(--dy))}}
+/* A single colored reflection on action buttons. */
+:is(.button,.project-share,.copy-button,.filters button,.lesson-filters button){position:relative;overflow:hidden}
+:is(.button,.project-share,.copy-button,.filters button,.lesson-filters button)::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(110deg,transparent 30%,#65e9ed18 40%,#ffffff55 49%,#a191ff33 57%,transparent 68%);translate:-120% 0;opacity:0}
+@keyframes button-color-reflection{0%{translate:-120% 0;opacity:0}20%{opacity:.8}80%{opacity:.8}100%{translate:120% 0;opacity:0}}
+@media(hover:hover) and (pointer:fine){:is(.button,.project-share,.copy-button,.filters button,.lesson-filters button):hover::after{animation:button-color-reflection .85s ease-out 1}}
+:is(.button,.project-share,.copy-button,.filters button,.lesson-filters button):focus-visible::after{animation:button-color-reflection .85s ease-out 1}
+@media(prefers-reduced-motion:reduce){:is(.button,.project-share,.copy-button,.filters button,.lesson-filters button)::after{display:none;animation:none!important}}
+/* One small circuit lights up when the footer first enters view. */
+footer{position:relative}
+.footer-circuit{position:absolute;top:-26px;left:50%;translate:-50% 0;width:min(300px,80vw);height:48px;color:var(--cyan);pointer-events:none;opacity:0}
+.footer-circuit path{stroke-dasharray:100;stroke-dashoffset:100}
+.footer-circuit circle{opacity:0}
+.footer-circuit.is-connected{animation:footer-circuit-fade 3.2s ease both}
+.footer-circuit.is-connected path{animation:footer-circuit-draw 1.4s ease-in-out .2s both}
+.footer-circuit.is-connected circle{animation:footer-node-light 1s ease var(--node-delay,0s) both}
+@keyframes footer-circuit-draw{to{stroke-dashoffset:0}}
+@keyframes footer-node-light{from{opacity:0}to{opacity:1}}
+@keyframes footer-circuit-fade{0%{opacity:0}15%,75%{opacity:.8}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.footer-circuit{display:none}.footer-circuit,.footer-circuit *{animation:none!important}}

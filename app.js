@@ -794,3 +794,14 @@ document.querySelectorAll('.project-card').forEach(card=>{
   logo.addEventListener('click',activate);logo.addEventListener('keydown',activate);
  });
 })();
+
+// Once-per-page footer circuit, decorative and silent.
+(() => {
+ const footer=document.querySelector('footer');if(!footer||!('IntersectionObserver' in window))return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('footer-circuit');svg.setAttribute('viewBox','0 0 300 48');svg.setAttribute('aria-hidden','true');
+ svg.innerHTML='<g fill="none" stroke="currentColor" stroke-width="1.4"><path pathLength="100" d="M8 24H60L77 8H126L142 24H158L174 40H224L240 24H292M60 24L77 40H126L142 24M158 24L174 8H224L240 24"/></g>';
+ [[8,24],[77,8],[126,40],[150,24],[174,8],[224,40],[292,24]].forEach(([x,y],i)=>{const node=document.createElementNS('http://www.w3.org/2000/svg','circle');node.setAttribute('cx',x);node.setAttribute('cy',y);node.setAttribute('r','3');node.setAttribute('fill','currentColor');node.style.setProperty('--node-delay',i*.14+'s');svg.append(node);});footer.prepend(svg);
+ const observer=new IntersectionObserver(entries=>{if(!entries.some(e=>e.isIntersecting))return;observer.disconnect();if(!reduced.matches)svg.classList.add('is-connected');},{threshold:.15});observer.observe(footer);
+ reduced.addEventListener('change',()=>{if(reduced.matches)svg.classList.remove('is-connected');});
+})();
