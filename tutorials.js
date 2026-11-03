@@ -1,4 +1,4 @@
-document.querySelectorAll('.lesson-play').forEach(button=>button.addEventListener('click',()=>{
+document.querySelectorAll('button.lesson-play').forEach(button=>button.addEventListener('click',()=>{
   const frame=document.createElement('iframe');
   frame.src=`https://www.youtube-nocookie.com/embed/${button.dataset.youtube}?autoplay=1`;
   frame.title=button.closest('.lesson-card').querySelector('h3').textContent;

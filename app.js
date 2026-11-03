@@ -427,8 +427,8 @@ document.querySelectorAll('.project-meta > span').forEach(status => {
       const [projectsDoc,lessonsDoc,newsDoc]=await Promise.all([document.querySelector('#projects .project-card')?document:getDoc('index.html'),document.querySelector('.lesson-library')?document:getDoc('tutorials.html'),document.querySelector('.news-list')?document:getDoc('news.html')]);
       const aliases={access:'Teams Office 365 თიმსი თიმსში მშობლებისთვის',design:'გრაფიკული დიზაინი',coding:'Scratch სკრეჩი პროგრამირება',office:'საოფისე ციფრული უნარები',webinars:'ვებინარი მასწავლებლებისთვის'};
       const lessons=[...lessonsDoc.querySelectorAll('.lesson-library .lesson-card')].map(card=>{
-        const link=card.querySelector('.lesson-youtube');const id=new URL(link.href,location.href).searchParams.get('v');
-        return {kind:'ვიდეო გაკვეთილი',title:card.querySelector('h3').textContent,description:card.querySelector('.lesson-category').textContent,keywords:card.textContent+' '+(aliases[card.dataset.lessonCategory]||''),href:'tutorials.html#lesson-'+id};
+        const link=card.querySelector('.lesson-page-link');
+        return {kind:'ვიდეო გაკვეთილი',title:card.querySelector('h3').textContent,description:card.querySelector('.lesson-category').textContent,keywords:card.textContent+' '+(aliases[card.dataset.lessonCategory]||''),href:link.getAttribute('href')};
       });
       const news=[...newsDoc.querySelectorAll('.news-list .news-card[id]')].map(card=>({
         kind:'სიახლე',title:card.querySelector('h3').textContent,description:card.querySelector('.news-copy > p')?.textContent||'',
