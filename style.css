@@ -576,3 +576,8 @@ html[data-theme="light"] #clubs::after{background:radial-gradient(ellipse at 75%
 }
 @media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.interactive-art>svg,.interactive-art :is(.art-blink,.art-search,.art-sun,.art-star,.art-world,.parking-car,.bridge-load,.art-grow,.art-sway,.art-bell-swing,.art-build,.art-rise,.art-lid){translate:none;rotate:none}}
 
+
+/* Roof plants stay rooted on the roof, even before hover. */
+.project-card .art-green-roof .art-grow{transform:none;rotate:none;transition:none}
+.art-green-roof .roof-plant{transform-box:view-box;rotate:var(--art-turn,0deg);transition:rotate .3s ease-out}
+@media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.art-green-roof .roof-plant{rotate:none;transition:none}}
