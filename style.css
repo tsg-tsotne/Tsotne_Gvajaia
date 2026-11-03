@@ -554,3 +554,9 @@ footer{position:relative}
 html[data-theme="light"] #clubs::before{background:radial-gradient(ellipse at 25% 50%,#19b5c921,transparent 72%)}
 html[data-theme="light"] #clubs::after{background:radial-gradient(ellipse at 75% 50%,#9460dc24,transparent 72%)}
 @media(prefers-reduced-motion:reduce){#clubs::before,#clubs::after{transition:none}}
+/* The sun and panel respond together; the base stays anchored. */
+.project-card .solar-follow .art-sun-move{transform:translate(var(--sun-x,0px),var(--sun-y,0px));transition:transform .65s cubic-bezier(.22,1,.36,1)}
+.project-card .solar-follow .art-track{transform-origin:150px 115px;transform:rotate(var(--panel-angle,0deg));transition:transform .65s cubic-bezier(.22,1,.36,1)}
+.project-card .solar-follow.solar-following .art-sun-move,.project-card .solar-follow.solar-following .art-track{transition:transform .16s ease-out}
+.solar-following .art-sun{fill:#ffd86b60;filter:drop-shadow(0 0 7px #ffd86b80)}
+@media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.project-card .solar-follow .art-sun-move,.project-card .solar-follow .art-track{transform:none;transition:none}}

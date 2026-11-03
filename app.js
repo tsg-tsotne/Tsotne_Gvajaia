@@ -805,3 +805,20 @@ document.querySelectorAll('.project-card').forEach(card=>{
  const observer=new IntersectionObserver(entries=>{if(!entries.some(e=>e.isIntersecting))return;observer.disconnect();if(!reduced.matches)svg.classList.add('is-connected');},{threshold:.15});observer.observe(footer);
  reduced.addEventListener('change',()=>{if(reduced.matches)svg.classList.remove('is-connected');});
 })();
+
+// Solar Tracker illustration follows the pointer without changing its project link.
+document.querySelectorAll('.art-solar-tracker').forEach(visual=>{
+ const svg=visual.querySelector('svg');if(!svg)return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)'),fine=matchMedia('(hover:hover) and (pointer:fine)');
+ visual.classList.add('solar-follow');let frame=0;
+ const reset=()=>{cancelAnimationFrame(frame);frame=0;visual.classList.remove('solar-following');['--sun-x','--sun-y','--panel-angle'].forEach(p=>visual.style.removeProperty(p));};
+ visual.addEventListener('pointermove',event=>{
+  if(event.pointerType!=='mouse'||reduced.matches||!fine.matches)return;
+  const matrix=svg.getScreenCTM();if(!matrix)return;
+  const p=new DOMPoint(event.clientX,event.clientY).matrixTransform(matrix.inverse());
+  const x=Math.max(25,Math.min(275,p.x)),y=Math.max(26,Math.min(65,26+p.y*.24));
+  const angle=Math.max(-32,Math.min(32,Math.atan2(x-150,115-y)*180/Math.PI*.55));
+  cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{visual.classList.add('solar-following');visual.style.setProperty('--sun-x',(x-224)+'px');visual.style.setProperty('--sun-y',(y-35)+'px');visual.style.setProperty('--panel-angle',angle+'deg');frame=0;});
+ },{passive:true});
+ visual.addEventListener('pointerleave',reset);visual.addEventListener('pointercancel',reset);window.addEventListener('blur',reset);reduced.addEventListener('change',reset);fine.addEventListener('change',reset);
+});
