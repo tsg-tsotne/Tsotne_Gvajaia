@@ -560,3 +560,19 @@ html[data-theme="light"] #clubs::after{background:radial-gradient(ellipse at 75%
 .project-card .solar-follow.solar-following .art-sun-move,.project-card .solar-follow.solar-following .art-track{transition:transform .16s ease-out}
 .solar-following .art-sun{fill:#ffd86b60;filter:drop-shadow(0 0 7px #ffd86b80)}
 @media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.project-card .solar-follow .art-sun-move,.project-card .solar-follow .art-track{transform:none;transition:none}}
+/* Individual illustration layers follow the mouse, alongside existing animations. */
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+.interactive-art>svg{translate:calc(var(--art-x,0px)*.25) calc(var(--art-y,0px)*.25);transition:translate .35s ease,filter .5s}
+.interactive-art :is(.art-blink,.art-search,.art-sun,.art-star,.art-world,.parking-car,.bridge-load){translate:var(--art-x,0px) var(--art-y,0px);transition:translate .25s ease}
+.interactive-art :is(.art-grow,.art-sway,.art-bell-swing){rotate:var(--art-turn,0deg);transform-origin:50% 85%;transition:rotate .3s ease}
+.art-minecraft.interactive-art .art-build,.art-school-campus.interactive-art .art-rise{rotate:var(--art-lean,0deg);translate:var(--art-x,0px) 0;transition:translate .3s,rotate .3s}
+.art-minecraft.interactive-art>svg,.art-school-campus.interactive-art>svg{rotate:y var(--art-turn,0deg);transition:rotate .3s,translate .3s}
+.art-trashbin.interactive-art .art-lid{rotate:var(--art-turn,0deg);transition:rotate .25s}
+.interactive-art.art-following :is(.art-button,.art-light,.signal-red,.signal-yellow,.signal-green){animation:none}
+.interactive-art .pointer-lit{fill:#91e9e5;filter:drop-shadow(0 0 7px #65e9ed)}
+.interactive-art .signal-red.pointer-lit{fill:#f48080;filter:drop-shadow(0 0 8px #f48080)}
+.interactive-art .signal-yellow.pointer-lit{fill:#edd58a;filter:drop-shadow(0 0 8px #edd58a)}
+.interactive-art .signal-green.pointer-lit{fill:#65e9bd;filter:drop-shadow(0 0 8px #65e9bd)}
+}
+@media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.interactive-art>svg,.interactive-art :is(.art-blink,.art-search,.art-sun,.art-star,.art-world,.parking-car,.bridge-load,.art-grow,.art-sway,.art-bell-swing,.art-build,.art-rise,.art-lid){translate:none;rotate:none}}
+

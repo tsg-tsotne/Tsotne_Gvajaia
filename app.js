@@ -822,3 +822,22 @@ document.querySelectorAll('.art-solar-tracker').forEach(visual=>{
  },{passive:true});
  visual.addEventListener('pointerleave',reset);visual.addEventListener('pointercancel',reset);window.addEventListener('blur',reset);reduced.addEventListener('change',reset);fine.addEventListener('change',reset);
 });
+
+// Pointer-driven details for every remaining project illustration.
+document.querySelectorAll('.animated-project:not(.art-solar-tracker)').forEach(visual=>{
+ const svg=visual.querySelector('svg');if(!svg)return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)'),fine=matchMedia('(hover:hover) and (pointer:fine)');
+ visual.classList.add('interactive-art');let frame=0;
+ const lights=[...svg.querySelectorAll('.signal-red,.signal-yellow,.signal-green,.art-button,.art-light')];
+ const reset=()=>{cancelAnimationFrame(frame);frame=0;visual.classList.remove('art-following');['--art-x','--art-y','--art-turn','--art-lean'].forEach(name=>visual.style.removeProperty(name));lights.forEach(light=>light.classList.remove('pointer-lit'));};
+ visual.addEventListener('pointermove',event=>{
+  if(event.pointerType!=='mouse'||reduced.matches||!fine.matches)return;
+  const matrix=svg.getScreenCTM();if(!matrix)return;const point=new DOMPoint(event.clientX,event.clientY).matrixTransform(matrix.inverse());
+  const x=Math.max(-1,Math.min(1,(point.x-150)/125)),y=Math.max(-1,Math.min(1,(point.y-90)/80));
+  cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{
+   visual.classList.add('art-following');visual.style.setProperty('--art-x',x*12+'px');visual.style.setProperty('--art-y',y*7+'px');visual.style.setProperty('--art-turn',x*10+'deg');visual.style.setProperty('--art-lean',-y*5+'deg');
+   let nearest=null,distance=Infinity;lights.forEach(light=>{const r=light.getBoundingClientRect(),d=Math.hypot(event.clientX-r.left-r.width/2,event.clientY-r.top-r.height/2);if(d<distance){distance=d;nearest=light;}});lights.forEach(light=>light.classList.toggle('pointer-lit',light===nearest));frame=0;
+  });
+ },{passive:true});
+ visual.addEventListener('pointerleave',reset);visual.addEventListener('pointercancel',reset);window.addEventListener('blur',reset);reduced.addEventListener('change',reset);fine.addEventListener('change',reset);
+});
