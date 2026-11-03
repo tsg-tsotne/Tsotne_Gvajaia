@@ -544,3 +544,13 @@ footer{position:relative}
 @keyframes footer-node-light{from{opacity:0}to{opacity:1}}
 @keyframes footer-circuit-fade{0%{opacity:0}15%,75%{opacity:.8}100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.footer-circuit{display:none}.footer-circuit,.footer-circuit *{animation:none!important}}
+/* Ambient club colors stay behind the content and never intercept links. */
+#clubs{position:relative;isolation:isolate}
+#clubs::before,#clubs::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;border-radius:40px;transition:opacity .65s ease}
+#clubs::before{background:radial-gradient(ellipse at 25% 50%,#32c9e126,transparent 72%)}
+#clubs::after{background:radial-gradient(ellipse at 75% 50%,#9a70f52b,transparent 72%)}
+#clubs:has(.club-card.robo:focus-within)::before,#clubs:has(.club-card.stem:focus-within)::after{opacity:1}
+@media(hover:hover) and (pointer:fine){#clubs:has(.club-card.robo:hover)::before,#clubs:has(.club-card.stem:hover)::after{opacity:1}#clubs:has(.club-card.stem:hover)::before,#clubs:has(.club-card.robo:hover)::after{opacity:0}}
+html[data-theme="light"] #clubs::before{background:radial-gradient(ellipse at 25% 50%,#19b5c921,transparent 72%)}
+html[data-theme="light"] #clubs::after{background:radial-gradient(ellipse at 75% 50%,#9460dc24,transparent 72%)}
+@media(prefers-reduced-motion:reduce){#clubs::before,#clubs::after{transition:none}}
