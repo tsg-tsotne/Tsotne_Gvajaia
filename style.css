@@ -592,3 +592,18 @@ html[data-theme="light"] #clubs::after{background:radial-gradient(ellipse at 75%
 .lesson-detail-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
 #lesson-copy-status{font-size:12px;color:var(--cyan);margin-top:12px;min-height:24px}
 .lesson-copy-fallback{font-size:12px;color:var(--muted)}.lesson-copy-fallback input{display:block;width:100%;padding:12px;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px}
+
+/* Straw tower: three braced storeys assemble on hover. */
+.art-marshmallow-tower .tower-structure{transform-origin:150px 155px;rotate:calc(var(--art-turn,0deg)*.35);translate:calc(var(--art-x,0px)*.3) 0;transition:rotate .3s ease,translate .3s ease}
+.art-marshmallow-tower .tower-trace{stroke:#65e9ed;stroke-width:2.5;stroke-dasharray:1;stroke-dashoffset:1;opacity:0}
+.project-card:is(:hover,:focus-within) .tower-floor{animation:tower-storey .85s both cubic-bezier(.2,.8,.2,1)}
+.project-card:is(:hover,:focus-within) .tower-floor-two{animation-delay:.14s}
+.project-card:is(:hover,:focus-within) .tower-floor-three{animation-delay:.28s}
+.project-card:is(:hover,:focus-within) .tower-trace{animation:tower-wiring 1.6s .25s both}
+.project-card:is(:hover,:focus-within) .tower-floor-two .tower-trace{animation-delay:.45s}
+.project-card:is(:hover,:focus-within) .tower-floor-three .tower-trace{animation-delay:.65s}
+.project-card:is(:hover,:focus-within) .tower-joints{animation:tower-joints 1.8s both}
+@keyframes tower-storey{0%{transform:translateY(14px);opacity:.2}100%{transform:translateY(0);opacity:1}}
+@keyframes tower-wiring{0%{stroke-dashoffset:1;opacity:0}20%{opacity:1}80%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:.45}}
+@keyframes tower-joints{0%,35%{opacity:.25}70%{filter:drop-shadow(0 0 5px #65e9ed);opacity:1}100%{opacity:1}}
+@media(prefers-reduced-motion:reduce),(hover:none),(pointer:coarse){.art-marshmallow-tower .tower-structure{rotate:none;translate:none}.project-card:is(:hover,:focus-within) :is(.tower-floor,.tower-trace,.tower-joints){animation:none}}
