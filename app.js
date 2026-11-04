@@ -9,6 +9,7 @@ let viewerPhotos = [], viewerIndex = 0;
 const enlargedPhoto = photoViewer.querySelector('.photo-enlarged');
 let photoTransitionVersion = 0;
 let photoTransition = null;
+let photoOrigin=null, photoOpening=false, photoClosing=false;
 const photoViewport=photoViewer.querySelector('.photo-viewport');
 const photoLoading=photoViewer.querySelector('.photo-loading');
 const photoThumbs=photoViewer.querySelector('.photo-thumbnails');
@@ -33,7 +34,7 @@ fullscreenButton.addEventListener('click',async()=>{try{if(document.fullscreenEl
 document.addEventListener('fullscreenchange',syncFullscreen);window.addEventListener('resize',paintPan);
 function renderPhotoThumbs(){photoThumbs.replaceChildren();viewerPhotos.forEach((photo,i)=>{const button=document.createElement('button');button.type='button';button.className='photo-thumbnail';button.setAttribute('aria-label','ფოტო '+(i+1)+' — '+photo.alt);const image=document.createElement('img');image.src=photo.src;image.alt='';image.loading='lazy';button.append(image);button.addEventListener('click',()=>showViewerPhoto(i));photoThumbs.append(button);});photoThumbs.hidden=viewerPhotos.length<2;}
 async function showViewerPhoto(index) {
- if(!viewerPhotos.length)return;
+ if(!viewerPhotos.length||photoClosing)return;
  const version=++photoTransitionVersion;photoTransition?.cancel();resetPhotoZoom();
  viewerIndex=(index+viewerPhotos.length)%viewerPhotos.length;
  const photo=viewerPhotos[viewerIndex];
@@ -49,9 +50,39 @@ async function showViewerPhoto(index) {
  await enlargedPhoto.decode().catch(()=>{});
  if(version!==photoTransitionVersion||!photoViewer.open)return;
  photoViewer.classList.remove('is-loading');photoLoading.hidden=true;
+ if(photoOpening){photoOpening=false;animatePhotoFromOrigin();return;}
  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)photoTransition=enlargedPhoto.animate([{opacity:0,filter:'blur(3px)'},{opacity:1,filter:'blur(0px)'}],{duration:280,easing:'ease-out'});
 }
+
+function photoOriginTransform(origin){
+ const a=origin?.getBoundingClientRect(),b=enlargedPhoto.getBoundingClientRect();
+ if(!a||!a.width||!b.width||a.bottom<0||a.top>innerHeight)return null;
+ return 'translate('+(a.left+a.width/2-b.left-b.width/2)+'px,'+(a.top+a.height/2-b.top-b.height/2)+'px) scale('+(a.width/b.width)+','+(a.height/b.height)+')';
+}
+function animatePhotoFromOrigin(){
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const transform=photoOriginTransform(photoOrigin);if(!transform)return;
+ photoViewer.classList.add('photo-travelling');
+ photoTransition=enlargedPhoto.animate([{transform,opacity:.65,borderRadius:'12px'},{transform:'none',opacity:1,borderRadius:'0px'}],{duration:420,easing:'cubic-bezier(.2,.75,.2,1)'});
+ photoTransition.finished.catch(()=>{}).finally(()=>photoViewer.classList.remove('photo-travelling'));
+}
+async function closePhotoViewer(){
+ if(photoClosing||!photoViewer.open)return;photoClosing=true;photoOpening=false;++photoTransitionVersion;photoTransition?.cancel();
+ if(document.fullscreenElement===photoViewer)await document.exitFullscreen().catch(()=>{});
+ resetPhotoZoom();
+ const origin=photoOrigin?.src===enlargedPhoto.src?photoOrigin:[...document.querySelectorAll('.project-gallery img,.photo-zoom-trigger img')].find(img=>img.src===enlargedPhoto.src);
+ const transform=photoOriginTransform(origin);
+ if(transform&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&!photoViewer.classList.contains('is-loading')){
+  photoViewer.classList.add('photo-travelling');
+  photoTransition=enlargedPhoto.animate([{transform:'none',opacity:1},{transform,opacity:.1}],{duration:300,easing:'cubic-bezier(.4,0,.8,.3)'});
+  await photoTransition.finished.catch(()=>{});
+ }
+ photoViewer.classList.remove('photo-travelling');photoViewer.close();photoClosing=false;
+}
+photoViewer.addEventListener('cancel',event=>{event.preventDefault();closePhotoViewer();});
+
 function openPhotoViewer(image) {
+ if(photoViewer.open)return;photoOrigin=image;photoOpening=true;photoClosing=false;
  viewerPhotos=[...new Map([...(image.closest('.news-card')||document).querySelectorAll(image.closest('.news-card')?'.photo-zoom-trigger img':'.real-project-photo img,.project-gallery img')].map(photo=>[photo.src,{src:photo.src,alt:photo.alt}])).values()];
  renderPhotoThumbs();photoViewer.showModal();document.body.classList.add('photo-viewer-open');showViewerPhoto(viewerPhotos.findIndex(photo=>photo.src===image.src));
 }
@@ -108,7 +139,7 @@ function revealNewsResult(){
 }
 addEventListener('hashchange',revealNewsResult);
 revealNewsResult();
-photoViewer.querySelector('.photo-close').addEventListener('click', () => photoViewer.close());
+photoViewer.querySelector('.photo-close').addEventListener('click', () => closePhotoViewer());
 photoViewer.querySelector('.photo-prev').addEventListener('click', () => showViewerPhoto(viewerIndex - 1));
 photoViewer.querySelector('.photo-next').addEventListener('click', () => showViewerPhoto(viewerIndex + 1));
 photoViewer.addEventListener('keydown', event => {
@@ -117,7 +148,7 @@ photoViewer.addEventListener('keydown', event => {
   }
 });
 photoViewer.addEventListener('click', event => {
-  if (event.target === photoViewer || event.target.classList.contains('photo-viewer-stage')) photoViewer.close();
+  if (event.target === photoViewer || event.target.classList.contains('photo-viewer-stage')) closePhotoViewer();
 });
 photoViewer.addEventListener('close', () => {
   ++photoTransitionVersion;
@@ -511,22 +542,9 @@ document.querySelectorAll('.project-meta > span').forEach(status => {
   const cards=[...list.querySelectorAll('.news-card')];
   const buttons=[...document.querySelectorAll('[data-news-filter]')];
   if(!buttons.length)return;
-  let filterVersion=0;
-  let filterAnimations=[];
-  async function filter(value,animate=true){
-    const version=++filterVersion;
-    filterAnimations.forEach(animation=>animation.cancel());
-    filterAnimations=[];
-    const motion=animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(motion){
-      filterAnimations=cards.filter(card=>!card.hidden).map(card=>card.animate([{opacity:1},{opacity:0}],{duration:120,fill:'forwards'}));
-      await Promise.all(filterAnimations.map(animation=>animation.finished.catch(()=>{})));
-      if(version!==filterVersion)return;
-      filterAnimations.forEach(animation=>animation.cancel());
-    }
+  function filter(value){
     buttons.forEach(button=>{const active=button.dataset.newsFilter===value;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
     cards.forEach(card=>{card.hidden=value!=='all'&&card.dataset.newsClub!==value;});
-    if(motion)filterAnimations=cards.filter(card=>!card.hidden).map((card,i)=>card.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}],{duration:240,delay:Math.min(i*35,140),fill:'backwards',easing:'ease-out'}));
     document.querySelector('#news-filter-status').textContent='ნაჩვენებია '+cards.filter(card=>!card.hidden).length+' სიახლე';
   }
   buttons.forEach(button=>button.addEventListener('click',()=>filter(button.dataset.newsFilter)));
@@ -841,3 +859,21 @@ document.querySelectorAll('.animated-project:not(.art-solar-tracker)').forEach(v
  },{passive:true});
  visual.addEventListener('pointerleave',reset);visual.addEventListener('pointercancel',reset);window.addEventListener('blur',reset);reduced.addEventListener('change',reset);fine.addEventListener('change',reset);
 });
+
+// Capture existing positions before filter handlers run; animate only layout deltas.
+(() => {
+ const running=new Map();let frame=0;
+ document.addEventListener('click',event=>{
+  const button=event.target.closest('[data-filter],[data-news-filter],[data-lesson-filter]');
+  if(!button||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const selector=button.hasAttribute('data-news-filter')?'.news-card':button.hasAttribute('data-lesson-filter')?'.lesson-card':'.project-card';
+  const cards=[...document.querySelectorAll(selector)];
+  const before=new Map(cards.filter(c=>!c.hidden).map(c=>[c,c.getBoundingClientRect()]));
+  running.forEach(a=>a.cancel());running.clear();cancelAnimationFrame(frame);
+  frame=requestAnimationFrame(()=>cards.filter(c=>!c.hidden).forEach((card,i)=>{
+   const old=before.get(card),now=card.getBoundingClientRect();
+   const animation=card.animate(old?[{translate:(old.left-now.left)+'px '+(old.top-now.top)+'px'},{translate:'0px 0px'}]:[{opacity:0,translate:'0px 16px'},{opacity:1,translate:'0px 0px'}],{duration:420,easing:'cubic-bezier(.2,.75,.2,1)',delay:old?0:Math.min(i*20,100)});
+   running.set(card,animation);animation.finished.catch(()=>{}).finally(()=>{if(running.get(card)===animation)running.delete(card);});
+  }));
+ },true);
+})();

@@ -607,3 +607,13 @@ html[data-theme="light"] #clubs::after{background:radial-gradient(ellipse at 75%
 @keyframes tower-wiring{0%{stroke-dashoffset:1;opacity:0}20%{opacity:1}80%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:.45}}
 @keyframes tower-joints{0%,35%{opacity:.25}70%{filter:drop-shadow(0 0 5px #65e9ed);opacity:1}100%{opacity:1}}
 @media(prefers-reduced-motion:reduce),(hover:none),(pointer:coarse){.art-marshmallow-tower .tower-structure{rotate:none;translate:none}.project-card:is(:hover,:focus-within) :is(.tower-floor,.tower-trace,.tower-joints){animation:none}}
+
+/* Gallery travel and tower load test. */
+.photo-viewer.photo-travelling .photo-viewport,.photo-viewer.photo-travelling .photo-viewer-stage{overflow:visible}
+.photo-travelling .photo-enlarged{position:relative;z-index:3;transform-origin:center;transition:none}
+.tower-test-weight{opacity:0;fill:#263b54;stroke:#65e9ed;stroke-width:2}
+.project-card:is(:hover,:focus-within) .tower-test-weight{animation:tower-load 2.6s .9s both}
+.project-card:is(:hover,:focus-within) .art-marshmallow-tower .tower-structure{animation:tower-stability 2.6s .9s both}
+@keyframes tower-load{0%{opacity:0;transform:translateY(-32px)}15%{opacity:1}30%,85%{opacity:1;transform:translateY(9px)}100%{opacity:0;transform:translateY(-25px)}}
+@keyframes tower-stability{0%,28%,75%,100%{transform:rotate(0deg)}35%{transform:rotate(-3deg)}43%{transform:rotate(2.5deg)}51%{transform:rotate(-1.5deg)}61%{transform:rotate(.6deg)}}
+@media(prefers-reduced-motion:reduce),(hover:none),(pointer:coarse){.project-card:is(:hover,:focus-within) .tower-test-weight,.project-card:is(:hover,:focus-within) .art-marshmallow-tower .tower-structure{animation:none}}
