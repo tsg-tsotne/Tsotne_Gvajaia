@@ -1,5 +1,21 @@
 [
   {
+    "id": "lunarsync-space-apps",
+    "title": "LunarSync — NASA Space Apps Challenge 2026",
+    "date": "2026-11-15",
+    "club": "STEAM",
+    "summary": "მოსწავლეებმა ზუგდიდის ტექნოპარკში LunarSync წარადგინეს — მზის ავტომატური ტრეკერი, პანელის წმენდის მექანიზმი და მობილური აპლიკაციით მართვადი მთვარის ბაზების მოდელი.",
+    "text": "დღეს ჩვენი მოსწავლეები NASA International Space Apps Challenge 2026-ის ფარგლებში ინოვაციური პროექტით - LunarSync - წარდგნენ.\n პროექტი აერთიანებს მზის ავტომატურ ტრეკერს, პანელის დაბინძურების აღმოჩენისა და წმენდის მექანიზმს, ასევე მთვარის ორი ბაზის მოდელს, რომელთა განათების მართვა მობილური აპლიკაციით არის შესაძლებელი.\n Arduino, სენსორები, ძრავები, Bluetooth და პროგრამირება - ყველაფერი ერთ პროექტში გაერთიანდა.\nთუმცა ყველაზე ღირებული თავად სამუშაო პროცესი იყო: იდეების განვითარება, ტექნიკური გამოწვევების გადაჭრა, ექსპერიმენტები და გუნდური თანამშრომლობა.\n ზუგდიდის ტექნოპარკი | 14-15 ნოემბერი, 2026\nდიდი იდეები პატარა ნაბიჯებით იწყება!",
+    "source": "https://www.facebook.com/permalink.php?story_fbid=pfbid02LuM8KoC1z581cvZynxa6QnsphR2qtw4NjmJeXYjS6MVzpyaQRThSFptDoUuyfSdrl&id=61594725177409",
+    "images": [
+      "assets/news/lunarsync-space-apps-1.webp",
+      "assets/news/lunarsync-space-apps-2.webp",
+      "assets/news/lunarsync-space-apps-3.webp",
+      "assets/news/lunarsync-space-apps-4.webp",
+      "assets/news/lunarsync-space-apps-5.webp"
+    ]
+  },
+  {
     "id": "marshmallow-tower",
     "title": "საწრუპებისა და მარშმელოუს კოშკი — საინჟინრო გამოწვევა",
     "date": "2026-11-03",
