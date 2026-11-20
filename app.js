@@ -3,7 +3,7 @@ const menuButton = document.querySelector('.menu-toggle');
 const photoViewer = document.createElement('dialog');
 photoViewer.className = 'photo-viewer';
 photoViewer.setAttribute('aria-label', 'ფოტოს გაფართოებული ხედი');
-photoViewer.innerHTML = `<div class="photo-viewer-toolbar"><span class="photo-counter" aria-live="polite"></span><div class="photo-tools"><button class="photo-zoom-button" type="button" aria-label="ფოტოს გადიდება" aria-pressed="false">＋</button><button class="photo-fullscreen" type="button" aria-label="სრული ეკრანი" aria-pressed="false">⛶</button><button class="photo-close" aria-label="ფოტოს დახურვა" autofocus>×</button></div></div><div class="photo-viewer-stage"><button class="photo-prev" aria-label="წინა ფოტო">‹</button><div class="photo-viewport"><img class="photo-enlarged" alt="" draggable="false"><span class="photo-loading" role="status">ფოტო იტვირთება…</span></div><button class="photo-next" aria-label="შემდეგი ფოტო">›</button></div><p class="photo-viewer-caption" aria-live="polite"></p><div class="photo-thumbnails" aria-label="გალერეის ფოტოები"></div>`;
+photoViewer.innerHTML = `<div class="photo-viewer-toolbar"><span class="photo-counter" aria-live="polite"></span><div class="photo-tools"><button class="photo-zoom-button" type="button" aria-label="ფოტოს გადიდება" aria-pressed="false">＋</button><button class="photo-fullscreen" type="button" aria-label="სრული ეკრანი" aria-pressed="false">⛶</button><button class="photo-close" aria-label="ფოტოს დახურვა" autofocus>×</button></div></div><div class="photo-viewer-stage"><button class="photo-prev" aria-label="წინა ფოტო">წინა</button><div class="photo-viewport"><img class="photo-enlarged" alt="" draggable="false"><span class="photo-loading" role="status">ფოტო იტვირთება…</span></div><button class="photo-next" aria-label="შემდეგი ფოტო">შემდეგი</button></div><p class="photo-viewer-caption" aria-live="polite"></p><div class="photo-thumbnails" aria-label="გალერეის ფოტოები"></div>`;
 document.body.append(photoViewer);
 let viewerPhotos = [], viewerIndex = 0;
 const enlargedPhoto = photoViewer.querySelector('.photo-enlarged');
@@ -309,7 +309,7 @@ document.querySelector('#copy-email')?.addEventListener('click', async () => {
   button.className = 'back-to-top';
   button.setAttribute('aria-label', 'გვერდის დასაწყისში დაბრუნება');
   button.title = 'ზემოთ დაბრუნება';
-  button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+  button.textContent = 'ზემოთ';
   button.hidden = true;
   document.body.append(button);
   let scheduled = false;

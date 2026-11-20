@@ -617,3 +617,8 @@ html[data-theme="light"] #clubs::after{background:radial-gradient(ellipse at 75%
 @keyframes tower-load{0%{opacity:0;transform:translateY(-32px)}15%{opacity:1}30%,85%{opacity:1;transform:translateY(9px)}100%{opacity:0;transform:translateY(-25px)}}
 @keyframes tower-stability{0%,28%,75%,100%{transform:rotate(0deg)}35%{transform:rotate(-3deg)}43%{transform:rotate(2.5deg)}51%{transform:rotate(-1.5deg)}61%{transform:rotate(.6deg)}}
 @media(prefers-reduced-motion:reduce),(hover:none),(pointer:coarse){.project-card:is(:hover,:focus-within) .tower-test-weight,.project-card:is(:hover,:focus-within) .art-marshmallow-tower .tower-structure{animation:none}}
+
+/* Text labels replace directional arrow controls. */
+.photo-prev,.photo-next{width:auto;min-width:64px;padding:0 10px;font-size:11px}
+.back-to-top{width:auto;min-width:64px;padding:0 10px;font-size:11px}
+@media(max-width:760px){.photo-prev{left:calc(50% - 82px)}.photo-next{right:calc(50% - 82px)}}
